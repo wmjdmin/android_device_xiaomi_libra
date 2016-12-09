@@ -159,4 +159,8 @@
     <string name="vibrator_intensity_dialog_warning">Значение выше %1$d%% не рекомендуется</string>
     <string name="vibrator_intensity_dialog_reset">Сбросить</string>
 
+    <!-- Wake on Plug -->
+    <string name="wake_when_plugged_or_unplugged_title">Пробуждение при подключении</string>
+    <string name="wake_when_plugged_or_unplugged_summary">Включить экран при подключении или отключении источника питания</string>
+
 </resources>
