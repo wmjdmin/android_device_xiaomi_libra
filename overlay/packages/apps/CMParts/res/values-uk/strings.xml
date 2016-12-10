@@ -226,7 +226,7 @@
 
     <!-- Power menu -->
     <string name="power_menu_title">Меню кнопки живлення</string>
-    <string name="power_menu_reboot_title">Перезавантаження</string>
+    <string name="power_menu_reboot_title">Перезапуск</string>
     <string name="power_menu_screenshot_title">Скріншот</string>
     <string name="power_menu_airplane_title">Режим польоту</string>
     <string name="power_menu_users_title">Користувачі</string>
@@ -271,8 +271,8 @@
 
     <!-- Profile triggers -->
     <string name="no_bluetooth_triggers">Не створено жодної пари Bluetooth.\nТоркніться щоб створити пару Bluetooth перед налаштуванням тригерів.</string>
-    <string name="no_wifi_triggers">Жодних Wi\u2011Fi точок доступу не налаштавано.\nНатисніть для підключення Wi\u2011Fi перед налаштуванням тригерів.</string>
-    <string name="no_triggers_configured">Жодних тригерів не налаштавано. Натисніть щоб додати більше.</string>
+    <string name="no_wifi_triggers">Жодних Wi\u2011Fi точок доступу не налаштовано.\nНатисніть для підключення Wi\u2011Fi перед налаштуванням тригерів.</string>
+    <string name="no_triggers_configured">Жодних тригерів не налаштовано. Натисніть щоб додати більше.</string>
     <string name="no_triggers_configured_nfc">Торкніться щоб встановити новий NFC-тригер.</string>
     <string name="profile_setup_setup_triggers_description">Вкажіть умови, за яких буде включатися даний профіль</string>
     <string name="profile_setup_actions_description">Тепер можна налаштувати, що має відбуватися при активації профілю</string>

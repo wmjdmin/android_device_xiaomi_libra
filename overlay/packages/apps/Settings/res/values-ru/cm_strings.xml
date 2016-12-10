@@ -161,6 +161,10 @@
 
     <!-- Wake on Plug -->
     <string name="wake_when_plugged_or_unplugged_title">Пробуждение при подключении</string>
-    <string name="wake_when_plugged_or_unplugged_summary">Включить экран при подключении или отключении источника питания</string>
+    <string name="wake_when_plugged_or_unplugged_summary">Включение экран при подключении или отключении источника питания</string>
+
+    <!-- Heads-up -->
+    <string name="heads_up_notifications_enabled_title">Всплывающие уведомления</string>
+    <string name="heads_up_notifications_enabled_summary">Отображение приоритетных уведомлений в маленьком плавающем окошке</string>
 
 </resources>
