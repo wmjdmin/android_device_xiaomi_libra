@@ -243,7 +243,7 @@
     <string name="camera_double_tap_power_gesture_title">Запуск камери подвійним натисканням кнопки живлення</string>
 
     <!-- Description of setting that controls gesture to open camera by double tapping the power button [CHAR LIMIT=NONE] -->
-    <string name="camera_double_tap_power_gesture_desc">"Швидко запускайте камеру, не розблоковуючи екран</string>
+    <string name="camera_double_tap_power_gesture_desc">Швидко запускайте камеру, не розблоковуючи екран</string>
 
     <!-- Profiles -->
     <string name="profile_menu_delete_title">Видалити</string>
