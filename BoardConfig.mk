@@ -54,7 +54,7 @@ BOARD_KERNEL_PAGESIZE    := 4096
 BOARD_KERNEL_TAGS_OFFSET := 0x01E00000
 BOARD_RAMDISK_OFFSET     := 0x02000000
 
-BOARD_KERNEL_CMDLINE := console=ttyHSL0,115200,n8 androidboot.hardware=libra boot_cpus=0-5
+BOARD_KERNEL_CMDLINE := console=ttyHSL0,115200,n8 androidboot.hardware=qcom boot_cpus=0-5
 BOARD_KERNEL_CMDLINE += lpm_levels.sleep_disabled=1 msm_poweroff.download_mode=0
 #BOARD_KERNEL_CMDLINE += synaptics_dsx.startup_fw_update=1
 #BOARD_KERNEL_CMDLINE += androidboot.selinux=permissive
@@ -138,8 +138,6 @@ TARGET_BOARD_PLATFORM_GPU := qcom-adreno418
 TARGET_BOARD_INFO_FILE := device/xiaomi/libra/board-info.txt
 TARGET_NO_RPC := true
 
-BOARD_EGL_CFG := device/xiaomi/libra/egl.cfg
-
 # Shader cache config options
 # Maximum size of the  GLES Shaders that can be cached for reuse.
 # Increase the size if shaders of size greater than 12KB are used.
@@ -188,7 +186,7 @@ BOARD_FLASH_BLOCK_SIZE := 131072
 
 BOARD_HAL_STATIC_LIBRARIES := libdumpstate.libra
 
-TARGET_RECOVERY_FSTAB = device/xiaomi/libra/fstab.libra
+TARGET_RECOVERY_FSTAB = device/xiaomi/libra/rootdir/fstab.qcom
 
 TARGET_RELEASETOOLS_EXTENSIONS := device/xiaomi/libra/releasetools
 

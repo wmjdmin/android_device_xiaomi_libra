@@ -23,21 +23,12 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/languages_full.mk)
 $(call inherit-product-if-exists, vendor/xiaomi/libra/libra-vendor.mk)
 
 PRODUCT_COPY_FILES += \
-    device/xiaomi/libra/init.libra.rc:root/init.libra.rc \
-    device/xiaomi/libra/init.aqua.rc:root/init.aqua.rc \
-    device/xiaomi/libra/init.recovery.libra.rc:root/init.recovery.libra.rc \
-    device/xiaomi/libra/init.libra.usb.rc:root/init.libra.usb.rc \
-    device/xiaomi/libra/fstab.libra:root/fstab.libra \
-    device/xiaomi/libra/ueventd.libra.rc:root/ueventd.libra.rc \
-    device/xiaomi/libra/init.libra.ramdump.rc:root/init.libra.ramdump.rc
-
-PRODUCT_COPY_FILES += \
     frameworks/av/media/libstagefright/data/media_codecs_google_audio.xml:system/etc/media_codecs_google_audio.xml \
     frameworks/av/media/libstagefright/data/media_codecs_google_telephony.xml:system/etc/media_codecs_google_telephony.xml \
     frameworks/av/media/libstagefright/data/media_codecs_google_video.xml:system/etc/media_codecs_google_video.xml \
-    device/xiaomi/libra/media_codecs.xml:system/etc/media_codecs.xml \
-    device/xiaomi/libra/media_codecs_performance.xml:system/etc/media_codecs_performance.xml \
-    device/xiaomi/libra/media_profiles.xml:system/etc/media_profiles.xml
+    device/xiaomi/libra/audio/media_codecs.xml:system/etc/media_codecs.xml \
+    device/xiaomi/libra/audio/media_codecs_performance.xml:system/etc/media_codecs_performance.xml \
+    device/xiaomi/libra/audio/media_profiles.xml:system/etc/media_profiles.xml
 
 # Audio
 PRODUCT_COPY_FILES += \
@@ -96,13 +87,9 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.vulkan.level-0.xml:system/etc/permissions/android.hardware.vulkan.level.xml \
     frameworks/native/data/etc/android.hardware.vulkan.version-1_0_3.xml:system/etc/permissions/android.hardware.vulkan.version.xml
 
-# For SPN display
-PRODUCT_COPY_FILES += \
-    device/xiaomi/libra/spn-conf.xml:system/etc/spn-conf.xml
-
 # For GPS
 PRODUCT_COPY_FILES += \
-    device/xiaomi/libra/sec_config:system/etc/sec_config
+    device/xiaomi/libra/configs/sec_config:system/etc/sec_config
 
 # For WiFi
 PRODUCT_COPY_FILES += \
@@ -119,19 +106,11 @@ PRODUCT_COPY_FILES += \
 
 # Thermal engine
 PRODUCT_COPY_FILES += \
-    device/xiaomi/libra/thermal-engine-8992.conf:system/etc/thermal-engine-8992.conf
+    device/xiaomi/libra/configs/thermal-engine-8992.conf:system/etc/thermal-engine-8992.conf
 
 # MSM IRQ balance
 PRODUCT_COPY_FILES += \
-    device/xiaomi/libra/msm_irqbalance.conf:system/etc/msm_irqbalance.conf
-
-# Power configuration file
-PRODUCT_COPY_FILES += \
-    device/xiaomi/libra/init.libra.power.sh:system/bin/init.libra.power.sh
-
-# MBN
-PRODUCT_COPY_FILES += \
-    device/xiaomi/libra/init.libra.sh:system/bin/init.libra.sh
+    device/xiaomi/libra/configs/msm_irqbalance.conf:system/etc/msm_irqbalance.conf
 
 PRODUCT_COPY_FILES += \
     device/xiaomi/libra/releasetools/device_check.sh:install/bin/device_check.sh
@@ -180,7 +159,7 @@ PRODUCT_PACKAGES += \
     gralloc.msm8992 \
     hwcomposer.msm8992 \
     memtrack.msm8992 \
-    lights.libra \
+    lights.msm8992 \
     liboverlay \
     libtinyxml
 
@@ -230,7 +209,7 @@ PRODUCT_PACKAGES += \
 
 # GPS configuration
 PRODUCT_COPY_FILES += \
-    device/xiaomi/libra/gps.conf:system/etc/gps.conf
+    device/xiaomi/libra/configs/gps.conf:system/etc/gps.conf
 
 # Fingerprint Sensor
 PRODUCT_PACKAGES += \
@@ -272,7 +251,7 @@ PRODUCT_PACKAGES += \
 
 # Multi HAL configuration file
 PRODUCT_COPY_FILES += \
-    device/xiaomi/libra/hals.conf:system/etc/sensors/hals.conf
+    device/xiaomi/libra/configs/hals.conf:system/etc/sensors/hals.conf
 
 # Build stlport for legacy blobs
 PRODUCT_PACKAGES += \
@@ -560,14 +539,6 @@ PRODUCT_PACKAGES += \
 ifneq (,$(filter userdebug eng, $(TARGET_BUILD_VARIANT)))
 PRODUCT_PACKAGES += \
     QXDMLogger
-
-PRODUCT_COPY_FILES += \
-    device/xiaomi/libra/init.libra.diag.rc.userdebug:root/init.libra.diag.rc \
-    device/xiaomi/libra/init.libra.misc.rc.userdebug:root/init.libra.misc.rc
-else
-PRODUCT_COPY_FILES += \
-    device/xiaomi/libra/init.libra.diag.rc.user:root/init.libra.diag.rc \
-    device/xiaomi/libra/init.libra.misc.rc.user:root/init.libra.misc.rc
 endif
 
 # setup dalvik vm configs.
