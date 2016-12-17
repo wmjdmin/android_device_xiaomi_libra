@@ -14,4 +14,4 @@
 # limitations under the License.
 #
 
-add_lunch_combo aosp_libra-userdebug
+add_lunch_combo cm_libra-userdebug

@@ -1,15 +1,17 @@
-# Boot animation
-TARGET_SCREEN_HEIGHT := 1920
-TARGET_SCREEN_WIDTH := 1080
+# Inherit 64-bit configs
+$(call inherit-product, $(SRC_TARGET_DIR)/product/core_64_bit.mk)
+
+$(call inherit-product, $(SRC_TARGET_DIR)/product/full_base_telephony.mk)
 
 # Inherit some common CM stuff.
 $(call inherit-product, vendor/cm/config/common_full_phone.mk)
 
 # Inherit device configuration
-$(call inherit-product, device/xiaomi/libra/aosp_libra.mk)
+$(call inherit-product, device/xiaomi/libra/device.mk)
 
 ## Device identifier. This must come after all inclusions
 PRODUCT_NAME := cm_libra
+PRODUCT_DEVICE := libra
 PRODUCT_BRAND := Xiaomi
 PRODUCT_MODEL := Mi-4c
 TARGET_MANUFACTURER := Xiaomi
