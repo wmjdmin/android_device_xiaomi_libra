@@ -118,6 +118,20 @@ PRODUCT_COPY_FILES += \
 
 PRODUCT_TAGS += dalvik.gc.type-precise
 
+# Init
+PRODUCT_PACKAGES += \
+    init.qcom.power.sh \
+    fstab.qcom \
+    init.aqua.rc \
+    init.qcom.diag.rc \
+    init.qcom.misc.rc \
+    init.qcom.ramdump.rc \
+    init.qcom.rc \
+    init.qcom.sh \
+    init.qcom.usb.rc \
+    init.recovery.qcom.rc \
+    ueventd.qcom.rc
+
 # Display
 PRODUCT_AAPT_CONFIG := normal
 PRODUCT_AAPT_PREF_CONFIG := xxhdpi
