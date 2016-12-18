@@ -63,6 +63,9 @@ BOARD_MKBOOTIMG_ARGS := --ramdisk_offset $(BOARD_RAMDISK_OFFSET) --tags_offset $
 
 BOARD_CUSTOM_BOOTIMG_MK := device/xiaomi/libra/mkbootimg.mk
 
+# Lights
+TARGET_PROVIDES_LIBLIGHT := true
+
 # Off charging mode
 WITH_CM_CHARGER := false
 
