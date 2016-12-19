@@ -141,6 +141,8 @@ TARGET_BOARD_PLATFORM_GPU := qcom-adreno418
 TARGET_BOARD_INFO_FILE := device/xiaomi/libra/board-info.txt
 TARGET_NO_RPC := true
 
+BOARD_EGL_CFG := device/xiaomi/libra/configs/egl.cfg
+
 # Shader cache config options
 # Maximum size of the  GLES Shaders that can be cached for reuse.
 # Increase the size if shaders of size greater than 12KB are used.
