@@ -224,17 +224,13 @@ TARGET_HAS_LEGACY_CAMERA_HAL1 := true
 TARGET_PER_MGR_ENABLED := true
 
 # Power
-TARGET_POWERHAL_SET_INTERACTIVE_EXT := device/xiaomi/libra/power/power_ext.c
-TARGET_POWERHAL_VARIANT := qcom
+TARGET_POWERHAL_VARIANT := custom_power
 
 # Sensors
 TARGET_NO_SENSOR_PERMISSION_CHECK := true
 
 # Include an expanded selection of fonts
 EXTENDED_FONT_FOOTPRINT := true
-
-# Double tap to wake
-TARGET_TAP_TO_WAKE_NODE := "/proc/touchscreen/double_tap_enable"
 
 # CM Hardware
 BOARD_USES_CYANOGEN_HARDWARE := true
