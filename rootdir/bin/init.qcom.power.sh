@@ -69,16 +69,6 @@ write /sys/devices/system/cpu/cpu0/cpufreq/interactive/min_sample_time 39000
 write /sys/devices/system/cpu/cpu0/cpufreq/interactive/max_freq_hysteresis 79000
 write /sys/devices/system/cpu/cpu0/cpufreq/interactive/ignore_hispeed_on_notif 1
 write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 302400
-chown system:system /sys/devices/system/cpu/cpu0/cpufreq/interactive/boost
-chown system:system /sys/devices/system/cpu/cpu0/cpufreq/interactive/boostpulse_duration
-chown system:system /sys/devices/system/cpu/cpu0/cpufreq/interactive/hispeed_freq
-chown system:system /sys/devices/system/cpu/cpu0/cpufreq/interactive/timer_rate
-chown system:system /sys/devices/system/cpu/cpu0/cpufreq/interactive/go_hispeed_load
-chown system:system /sys/devices/system/cpu/cpu0/cpufreq/interactive/io_is_busy
-chown system:system /sys/devices/system/cpu/cpu0/cpufreq/interactive/target_loads
-chown system:system /sys/devices/system/cpu/cpu0/cpufreq/interactive/above_hispeed_delay
-chown system:system /sys/devices/system/cpu/cpu0/cpufreq/interactive/min_sample_time
-chown system:system /sys/devices/system/cpu/cpu0/cpufreq/interactive/max_freq_hysteresis
 chown system:system /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
 chown system:system /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
 
@@ -101,16 +91,6 @@ write /sys/devices/system/cpu/cpu4/cpufreq/interactive/min_sample_time 39000
 write /sys/devices/system/cpu/cpu4/cpufreq/interactive/max_freq_hysteresis 79000
 write /sys/devices/system/cpu/cpu4/cpufreq/interactive/ignore_hispeed_on_notif 1
 write /sys/devices/system/cpu/cpu4/cpufreq/scaling_min_freq 302400
-chown system:system /sys/devices/system/cpu/cpu4/cpufreq/interactive/boost
-chown system:system /sys/devices/system/cpu/cpu4/cpufreq/interactive/boostpulse_duration
-chown system:system /sys/devices/system/cpu/cpu4/cpufreq/interactive/hispeed_freq
-chown system:system /sys/devices/system/cpu/cpu4/cpufreq/interactive/timer_rate
-chown system:system /sys/devices/system/cpu/cpu4/cpufreq/interactive/go_hispeed_load
-chown system:system /sys/devices/system/cpu/cpu4/cpufreq/interactive/io_is_busy
-chown system:system /sys/devices/system/cpu/cpu4/cpufreq/interactive/target_loads
-chown system:system /sys/devices/system/cpu/cpu4/cpufreq/interactive/above_hispeed_delay
-chown system:system /sys/devices/system/cpu/cpu4/cpufreq/interactive/min_sample_time
-chown system:system /sys/devices/system/cpu/cpu4/cpufreq/interactive/max_freq_hysteresis
 chown system:system /sys/devices/system/cpu/cpu4/cpufreq/scaling_min_freq
 chown system:system /sys/devices/system/cpu/cpu4/cpufreq/scaling_max_freq
 
