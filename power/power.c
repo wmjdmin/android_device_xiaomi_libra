@@ -129,7 +129,7 @@ static void power_set_interactive(__attribute__((unused)) struct power_module *m
     // break out early if governor is not interactive
     if (!check_governor()) return;
 
-    if (current_power_profile == PROFILE_POWER_SAVE || current_power_profile == PROFILE_BIAS_POWER) {
+    if (current_power_profile == PROFILE_POWER_SAVE || current_power_profile == PROFILE_BIAS_POWER_SAVE) {
 		ALOGD("Device is in power save mode, disabling big CPU cluster");
 		sysfs_write_str(BIG_MAX_CPU_PATH "max_cpus", "0");
         sysfs_write_str(BIG_MIN_CPU_PATH "min_cpus", "0");
@@ -171,10 +171,12 @@ static void set_power_profile(int profile)
 
     ALOGD("%s: setting profile %d", __func__, profile);
 
-    /* Bring BIG CPUs online before configuring */
-    sysfs_write_str(BIG_MAX_CPU_PATH "max_cpus", "2");
-    sysfs_write_str(BIG_MIN_CPU_PATH "min_cpus", "2");
-    sysfs_write_int(BIG_CPU_PATH "online", 1);
+    if (profile != PROFILE_POWER_SAVE || profile != PROFILE_BIAS_POWER_SAVE) {
+        /* Bring BIG CPUs online before configuring */
+        sysfs_write_str(BIG_MAX_CPU_PATH "max_cpus", "2");
+        sysfs_write_str(BIG_MIN_CPU_PATH "min_cpus", "2");
+        sysfs_write_str(BIG_CPU_PATH "online", "1");
+    }
 
     /* Little cluster */
     sysfs_write_int(LITTLE_INTERACTIVE_PATH "boost",
@@ -202,35 +204,33 @@ static void set_power_profile(int profile)
     sysfs_write_int(LITTLE_CPUFREQ_LIMIT_PATH "scaling_max_freq",
                     profiles[profile].little_scaling_max_freq);
 
-    if (!check_big_governor()) {
-        ALOGE("Big cluster is not active!");
-	};
-
     /* Big cluster */
-    sysfs_write_int(BIG_INTERACTIVE_PATH "boost",
-                    profiles[profile].big_boost);
-    sysfs_write_int(BIG_INTERACTIVE_PATH "boostpulse_duration",
-                    profiles[profile].big_boostpulse_duration);
-    sysfs_write_int(BIG_INTERACTIVE_PATH "go_hispeed_load",
-                    profiles[profile].big_go_hispeed_load);
-    sysfs_write_int(BIG_INTERACTIVE_PATH "hispeed_freq",
-                    profiles[profile].big_hispeed_freq);
-    sysfs_write_int(BIG_INTERACTIVE_PATH "io_is_busy",
-                    profiles[profile].big_io_is_busy);
-    sysfs_write_str(BIG_INTERACTIVE_PATH "above_hispeed_delay",
-                    profiles[profile].big_above_hispeed_delay);
-    sysfs_write_int(BIG_INTERACTIVE_PATH "timer_rate",
-                    profiles[profile].big_timer_rate);
-    sysfs_write_int(BIG_INTERACTIVE_PATH "min_sample_time",
-                    profiles[profile].big_min_sample_time);
-    sysfs_write_int(BIG_INTERACTIVE_PATH "max_freq_hysteresis",
-                    profiles[profile].big_max_freq_hysteresis);
-    sysfs_write_str(BIG_INTERACTIVE_PATH "target_loads",
-                    profiles[profile].big_target_loads);
-    sysfs_write_int(BIG_CPUFREQ_LIMIT_PATH "scaling_min_freq",
-                    profiles[profile].big_scaling_min_freq);
-    sysfs_write_int(BIG_CPUFREQ_LIMIT_PATH "scaling_max_freq",
-                    profiles[profile].big_scaling_max_freq);
+    if (profile != PROFILE_POWER_SAVE || profile != PROFILE_BIAS_POWER_SAVE) {
+        sysfs_write_int(BIG_INTERACTIVE_PATH "boost",
+                        profiles[profile].big_boost);
+        sysfs_write_int(BIG_INTERACTIVE_PATH "boostpulse_duration",
+                        profiles[profile].big_boostpulse_duration);
+        sysfs_write_int(BIG_INTERACTIVE_PATH "go_hispeed_load",
+                        profiles[profile].big_go_hispeed_load);
+        sysfs_write_int(BIG_INTERACTIVE_PATH "hispeed_freq",
+                        profiles[profile].big_hispeed_freq);
+        sysfs_write_int(BIG_INTERACTIVE_PATH "io_is_busy",
+                        profiles[profile].big_io_is_busy);
+        sysfs_write_str(BIG_INTERACTIVE_PATH "above_hispeed_delay",
+                        profiles[profile].big_above_hispeed_delay);
+        sysfs_write_int(BIG_INTERACTIVE_PATH "timer_rate",
+                        profiles[profile].big_timer_rate);
+        sysfs_write_int(BIG_INTERACTIVE_PATH "min_sample_time",
+                        profiles[profile].big_min_sample_time);
+        sysfs_write_int(BIG_INTERACTIVE_PATH "max_freq_hysteresis",
+                        profiles[profile].big_max_freq_hysteresis);
+        sysfs_write_str(BIG_INTERACTIVE_PATH "target_loads",
+                        profiles[profile].big_target_loads);
+        sysfs_write_int(BIG_CPUFREQ_LIMIT_PATH "scaling_min_freq",
+                        profiles[profile].big_scaling_min_freq);
+        sysfs_write_int(BIG_CPUFREQ_LIMIT_PATH "scaling_max_freq",
+                        profiles[profile].big_scaling_max_freq);
+    }
     sysfs_write_int(BIG_MIN_CPU_PATH "min_cpus",
                     profiles[profile].big_min_cpus);
     sysfs_write_int(BIG_MAX_CPU_PATH "max_cpus",

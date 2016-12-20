@@ -16,10 +16,10 @@
 
 enum {
     PROFILE_POWER_SAVE = 0,
-    PROFILE_BIAS_POWER,
     PROFILE_BALANCED,
-    PROFILE_BIAS_PERFORMANCE,
     PROFILE_HIGH_PERFORMANCE,
+    PROFILE_BIAS_POWER_SAVE,
+    PROFILE_BIAS_PERFORMANCE,
     PROFILE_MAX
 };
 
@@ -74,24 +74,6 @@ static power_profile profiles[PROFILE_MAX] = {
         .big_min_cpus = 0,
         .big_max_cpus = 0,
     },
-    [PROFILE_BIAS_POWER] = {
-        /* Little cluster */
-        .little_boost = 0,
-        .little_boostpulse_duration = 0,
-        .little_go_hispeed_load = 99,
-        .little_hispeed_freq = 600000,
-        .little_io_is_busy = 1,
-        .little_timer_rate = 50000,
-        .little_above_hispeed_delay = "19000",
-        .little_min_sample_time = 50000,
-        .little_max_freq_hysteresis = 0,
-        .little_target_loads = "71 384000:75 460000:69 600000:80 672000:76 787000:81 864000:81 960000:69 1248000:78",
-        .little_scaling_min_freq = 302400,
-        .little_scaling_max_freq = 1440000,
-        /* Big cluster */
-        .big_min_cpus = 0,
-        .big_max_cpus = 0,
-    },
     [PROFILE_BALANCED] = {
         /* Little cluster */
         .little_boost = 0,
@@ -122,36 +104,6 @@ static power_profile profiles[PROFILE_MAX] = {
         .big_min_cpus = 0,
         .big_max_cpus = 2,
     },
-    [PROFILE_BIAS_PERFORMANCE] = {
-        /* Little cluster */
-        .little_boost = 1,
-        .little_boostpulse_duration = 40,
-        .little_go_hispeed_load = 90,
-        .little_hispeed_freq = 1248000,
-        .little_io_is_busy = 1,
-        .little_timer_rate = 20000,
-        .little_above_hispeed_delay = "19000",
-        .little_min_sample_time = 20000,
-        .little_max_freq_hysteresis = 80000,
-        .little_target_loads = "71 384000:75 460000:69 600000:80 672000:76 787000:81 864000:81 960000:69 1248000:78",
-        .little_scaling_min_freq = 302400,
-        .little_scaling_max_freq = 1440000,
-        /* Big cluster */
-        .big_boost = 1,
-        .big_boostpulse_duration = 40,
-        .big_go_hispeed_load = 80,
-        .big_hispeed_freq = 1248000,
-        .big_io_is_busy = 1,
-        .big_timer_rate = 20000,
-        .big_above_hispeed_delay = "19000",
-        .big_min_sample_time = 40000,
-        .big_max_freq_hysteresis = 80000,
-        .big_target_loads = "71 384000:72 480000:68 633000:74 768000:80 864000:81 960000:69 1248000:84 1344000:84 1440000:84 1536000:85 1632000:85 1728000:85 1824000:84",
-        .big_scaling_min_freq = 302400,
-        .big_scaling_max_freq = 1824000,
-        .big_min_cpus = 2,
-        .big_max_cpus = 2,
-    },
     [PROFILE_HIGH_PERFORMANCE] = {
         /* Little cluster */
         .little_boost = 1,
@@ -169,6 +121,54 @@ static power_profile profiles[PROFILE_MAX] = {
         /* Big cluster */
         .big_boost = 1,
         .big_boostpulse_duration = 100,
+        .big_go_hispeed_load = 80,
+        .big_hispeed_freq = 1248000,
+        .big_io_is_busy = 1,
+        .big_timer_rate = 20000,
+        .big_above_hispeed_delay = "19000",
+        .big_min_sample_time = 40000,
+        .big_max_freq_hysteresis = 80000,
+        .big_target_loads = "71 384000:72 480000:68 633000:74 768000:80 864000:81 960000:69 1248000:84 1344000:84 1440000:84 1536000:85 1632000:85 1728000:85 1824000:84",
+        .big_scaling_min_freq = 302400,
+        .big_scaling_max_freq = 1824000,
+        .big_min_cpus = 2,
+        .big_max_cpus = 2,
+    },
+    [PROFILE_BIAS_POWER_SAVE] = {
+        /* Little cluster */
+        .little_boost = 0,
+        .little_boostpulse_duration = 0,
+        .little_go_hispeed_load = 99,
+        .little_hispeed_freq = 600000,
+        .little_io_is_busy = 1,
+        .little_timer_rate = 50000,
+        .little_above_hispeed_delay = "19000",
+        .little_min_sample_time = 50000,
+        .little_max_freq_hysteresis = 0,
+        .little_target_loads = "71 384000:75 460000:69 600000:80 672000:76 787000:81 864000:81 960000:69 1248000:78",
+        .little_scaling_min_freq = 302400,
+        .little_scaling_max_freq = 1440000,
+        /* Big cluster */
+        .big_min_cpus = 0,
+        .big_max_cpus = 0,
+    },
+    [PROFILE_BIAS_PERFORMANCE] = {
+        /* Little cluster */
+        .little_boost = 1,
+        .little_boostpulse_duration = 40,
+        .little_go_hispeed_load = 90,
+        .little_hispeed_freq = 1248000,
+        .little_io_is_busy = 1,
+        .little_timer_rate = 20000,
+        .little_above_hispeed_delay = "19000",
+        .little_min_sample_time = 20000,
+        .little_max_freq_hysteresis = 80000,
+        .little_target_loads = "71 384000:75 460000:69 600000:80 672000:76 787000:81 864000:81 960000:69 1248000:78",
+        .little_scaling_min_freq = 302400,
+        .little_scaling_max_freq = 1440000,
+        /* Big cluster */
+        .big_boost = 1,
+        .big_boostpulse_duration = 40,
         .big_go_hispeed_load = 80,
         .big_hispeed_freq = 1248000,
         .big_io_is_busy = 1,
