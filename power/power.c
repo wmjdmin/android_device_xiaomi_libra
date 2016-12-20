@@ -171,7 +171,7 @@ static void set_power_profile(int profile)
 
     ALOGD("%s: setting profile %d", __func__, profile);
 
-    if (profile != PROFILE_POWER_SAVE || profile != PROFILE_BIAS_POWER_SAVE) {
+    if (profile != PROFILE_POWER_SAVE && profile != PROFILE_BIAS_POWER_SAVE) {
         /* Bring BIG CPUs online before configuring */
         sysfs_write_str(BIG_MAX_CPU_PATH "max_cpus", "2");
         sysfs_write_str(BIG_MIN_CPU_PATH "min_cpus", "2");
@@ -205,7 +205,7 @@ static void set_power_profile(int profile)
                     profiles[profile].little_scaling_max_freq);
 
     /* Big cluster */
-    if (profile != PROFILE_POWER_SAVE || profile != PROFILE_BIAS_POWER_SAVE) {
+    if (profile != PROFILE_POWER_SAVE && profile != PROFILE_BIAS_POWER_SAVE) {
         sysfs_write_int(BIG_INTERACTIVE_PATH "boost",
                         profiles[profile].big_boost);
         sysfs_write_int(BIG_INTERACTIVE_PATH "boostpulse_duration",
