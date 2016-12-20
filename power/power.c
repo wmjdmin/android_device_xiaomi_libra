@@ -34,6 +34,7 @@
 #define NODE_MAX (64)
 #define LITTLE_CPUFREQ_LIMIT_PATH "/sys/devices/system/cpu/cpu0/cpufreq/"
 #define LITTLE_INTERACTIVE_PATH "/sys/devices/system/cpu/cpu0/cpufreq/interactive/"
+#define BIG_CPU_PATH "/sys/devices/system/cpu/cpu4/"
 #define BIG_CPUFREQ_LIMIT_PATH "/sys/devices/system/cpu/cpu4/cpufreq/"
 #define BIG_INTERACTIVE_PATH "/sys/devices/system/cpu/cpu4/cpufreq/interactive/"
 #define BIG_MIN_CPU_PATH "/sys/devices/system/cpu/cpu4/core_ctl/"
@@ -83,6 +84,15 @@ static bool check_governor(void)
 {
     struct stat s;
     int err = stat(LITTLE_INTERACTIVE_PATH, &s);
+    if (err != 0) return false;
+    if (S_ISDIR(s.st_mode)) return true;
+    return false;
+}
+
+static bool check_big_governor(void)
+{
+    struct stat s;
+    int err = stat(BIG_INTERACTIVE_PATH, &s);
     if (err != 0) return false;
     if (S_ISDIR(s.st_mode)) return true;
     return false;
@@ -161,6 +171,11 @@ static void set_power_profile(int profile)
 
     ALOGD("%s: setting profile %d", __func__, profile);
 
+    /* Bring BIG CPUs online before configuring */
+    sysfs_write_str(BIG_MAX_CPU_PATH "max_cpus", "2");
+    sysfs_write_str(BIG_MIN_CPU_PATH "min_cpus", "2");
+    sysfs_write_int(BIG_CPU_PATH "online", 1);
+
     /* Little cluster */
     sysfs_write_int(LITTLE_INTERACTIVE_PATH "boost",
                     profiles[profile].little_boost);
@@ -186,6 +201,11 @@ static void set_power_profile(int profile)
                     profiles[profile].little_scaling_min_freq);
     sysfs_write_int(LITTLE_CPUFREQ_LIMIT_PATH "scaling_max_freq",
                     profiles[profile].little_scaling_max_freq);
+
+    if (!check_big_governor()) {
+        ALOGE("Big cluster is not active!");
+	};
+
     /* Big cluster */
     sysfs_write_int(BIG_INTERACTIVE_PATH "boost",
                     profiles[profile].big_boost);
@@ -271,7 +291,7 @@ static struct hw_module_methods_t power_module_methods = {
     .open = NULL,
 };
 
-void set_feature(struct power_module *module, feature_t feature, int state)
+void set_feature(struct power_module *module __unused, feature_t feature, int state)
 {
     char tmp_str[NODE_MAX];
     if (feature == POWER_FEATURE_DOUBLE_TAP_TO_WAKE) {

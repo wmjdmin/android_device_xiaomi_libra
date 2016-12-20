@@ -69,8 +69,6 @@ write /sys/devices/system/cpu/cpu0/cpufreq/interactive/min_sample_time 39000
 write /sys/devices/system/cpu/cpu0/cpufreq/interactive/max_freq_hysteresis 79000
 write /sys/devices/system/cpu/cpu0/cpufreq/interactive/ignore_hispeed_on_notif 1
 write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 302400
-chown system:system /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
-chown system:system /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
 
 # online CPU4
 write /sys/devices/system/cpu/cpu4/online 1
@@ -91,8 +89,7 @@ write /sys/devices/system/cpu/cpu4/cpufreq/interactive/min_sample_time 39000
 write /sys/devices/system/cpu/cpu4/cpufreq/interactive/max_freq_hysteresis 79000
 write /sys/devices/system/cpu/cpu4/cpufreq/interactive/ignore_hispeed_on_notif 1
 write /sys/devices/system/cpu/cpu4/cpufreq/scaling_min_freq 302400
-chown system:system /sys/devices/system/cpu/cpu4/cpufreq/scaling_min_freq
-chown system:system /sys/devices/system/cpu/cpu4/cpufreq/scaling_max_freq
+chown system:system /sys/devices/system/cpu/cpu4/online
 
 # restore A57's max
 copy /sys/devices/system/cpu/cpu4/cpufreq/cpuinfo_max_freq /sys/devices/system/cpu/cpu4/cpufreq/scaling_max_freq
