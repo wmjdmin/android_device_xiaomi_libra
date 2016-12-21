@@ -89,15 +89,6 @@ static bool check_governor(void)
     return false;
 }
 
-static bool check_big_governor(void)
-{
-    struct stat s;
-    int err = stat(BIG_INTERACTIVE_PATH, &s);
-    if (err != 0) return false;
-    if (S_ISDIR(s.st_mode)) return true;
-    return false;
-}
-
 static int is_profile_valid(int profile)
 {
     return profile >= 0 && profile < PROFILE_MAX;
@@ -130,27 +121,27 @@ static void power_set_interactive(__attribute__((unused)) struct power_module *m
     if (!check_governor()) return;
 
     if (current_power_profile == PROFILE_POWER_SAVE || current_power_profile == PROFILE_BIAS_POWER_SAVE) {
-		ALOGD("Device is in power save mode, disabling big CPU cluster");
-		sysfs_write_str(BIG_MAX_CPU_PATH "max_cpus", "0");
+        ALOGD("Device is in power save mode, disabling big CPU cluster");
+        sysfs_write_str(BIG_MAX_CPU_PATH "max_cpus", "0");
         sysfs_write_str(BIG_MIN_CPU_PATH "min_cpus", "0");
     } else if (current_power_profile == PROFILE_BALANCED) {
         if (!on) {
-		    ALOGD("Screen is OFF, disabling big CPU cluster");
+            ALOGD("Screen is OFF, disabling big CPU cluster");
             sysfs_write_str(BIG_MAX_CPU_PATH "max_cpus", "0");
             sysfs_write_str(BIG_MIN_CPU_PATH "min_cpus", "0");
         } else {
-		    ALOGD("Screen is ON, enabling big CPU cluster");
-	        sysfs_write_str(BIG_MAX_CPU_PATH "max_cpus", "2");
+            ALOGD("Screen is ON, enabling big CPU cluster");
+            sysfs_write_str(BIG_MAX_CPU_PATH "max_cpus", "2");
             sysfs_write_str(BIG_MIN_CPU_PATH "min_cpus", "0");
         }
     } else if (current_power_profile == PROFILE_BIAS_PERFORMANCE || current_power_profile == PROFILE_HIGH_PERFORMANCE) {
-		if (!on) {
-		    ALOGD("Screen is OFF, disabling big CPU cluster");
+        if (!on) {
+            ALOGD("Screen is OFF, disabling big CPU cluster");
             sysfs_write_str(BIG_MAX_CPU_PATH "max_cpus", "0");
             sysfs_write_str(BIG_MIN_CPU_PATH "min_cpus", "0");
         } else {
-		    ALOGD("Screen is ON, enabling big CPU cluster");
-	        sysfs_write_str(BIG_MAX_CPU_PATH "max_cpus", "2");
+            ALOGD("Screen is ON, enabling big CPU cluster");
+            sysfs_write_str(BIG_MAX_CPU_PATH "max_cpus", "2");
             sysfs_write_str(BIG_MIN_CPU_PATH "min_cpus", "2");
         }
     }
