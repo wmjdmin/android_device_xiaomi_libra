@@ -179,9 +179,9 @@ static power_profile profiles[PROFILE_MAX] = {
         .gpu_governor = "msm-adreno-tz",
         .gpu_max_freq = 600000000,
         .gpu_min_freq = 600000000,
-        .gpu_min_pwrlevel = 5,
+        .gpu_min_pwrlevel = 0,
         .gpu_max_pwrlevel = 0,
-        .gpu_default_pwrlevel = 5,
+        .gpu_default_pwrlevel = 0,
     },
     [PROFILE_BIAS_POWER_SAVE] = {
         /* Little cluster */
