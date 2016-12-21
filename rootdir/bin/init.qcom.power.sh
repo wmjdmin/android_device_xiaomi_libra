@@ -91,6 +91,9 @@ write /sys/devices/system/cpu/cpu4/cpufreq/interactive/ignore_hispeed_on_notif 1
 write /sys/devices/system/cpu/cpu4/cpufreq/scaling_min_freq 302400
 chown system:system /sys/devices/system/cpu/cpu4/online
 
+chown system:system /sys/module/cpu_boost/parameters/input_boost_freq
+chown system:system /sys/module/cpu_boost/parameters/input_boost_ms
+
 # restore A57's max
 copy /sys/devices/system/cpu/cpu4/cpufreq/cpuinfo_max_freq /sys/devices/system/cpu/cpu4/cpufreq/scaling_max_freq
 

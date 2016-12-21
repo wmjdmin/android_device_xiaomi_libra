@@ -26,6 +26,9 @@ enum {
 typedef struct governor_settings {
     int is_interactive;
     /* Little cluster */
+    char *little_scaling_governor;
+    int little_use_sched_load;
+    int little_use_migration_notif;
     int little_boost;
     int little_boostpulse_duration;
     int little_go_hispeed_load;
@@ -39,6 +42,9 @@ typedef struct governor_settings {
     int little_scaling_min_freq;
     int little_scaling_max_freq;
     /* Big cluster */
+    char *big_scaling_governor;
+    int big_use_sched_load;
+    int big_use_migration_notif;
     int big_boost;
     int big_boostpulse_duration;
     int big_go_hispeed_load;
@@ -53,11 +59,24 @@ typedef struct governor_settings {
     int big_scaling_max_freq;
     int big_min_cpus;
     int big_max_cpus;
+    /* GPU */
+    char *gpu_governor;
+    int gpu_max_freq;
+    int gpu_min_freq;
+    int gpu_min_pwrlevel;
+    int gpu_max_pwrlevel;
+    int gpu_default_pwrlevel;
+    /* Input bost */
+    char *input_boost_freq;
+    int input_boost_ms;
 } power_profile;
 
 static power_profile profiles[PROFILE_MAX] = {
     [PROFILE_POWER_SAVE] = {
         /* Little cluster */
+        .little_scaling_governor = "interactive",
+        .little_use_sched_load = 1,
+        .little_use_migration_notif = 1,
         .little_boost = 0,
         .little_boostpulse_duration = 0,
         .little_go_hispeed_load = 99,
@@ -73,9 +92,22 @@ static power_profile profiles[PROFILE_MAX] = {
         /* Big cluster */
         .big_min_cpus = 0,
         .big_max_cpus = 0,
+        /* Input boost */
+        .input_boost_freq = "0",
+        .input_boost_ms = 0,
+        /* GPU */
+        .gpu_governor = "powersave",
+        .gpu_max_freq = 180000000,
+        .gpu_min_freq = 180000000,
+        .gpu_min_pwrlevel = 5,
+        .gpu_max_pwrlevel = 5,
+        .gpu_default_pwrlevel = 5,
     },
     [PROFILE_BALANCED] = {
         /* Little cluster */
+        .little_scaling_governor = "interactive",
+        .little_use_sched_load = 1,
+        .little_use_migration_notif = 1,
         .little_boost = 0,
         .little_boostpulse_duration = 40,
         .little_go_hispeed_load = 99,
@@ -89,6 +121,9 @@ static power_profile profiles[PROFILE_MAX] = {
         .little_scaling_min_freq = 302400,
         .little_scaling_max_freq = 1440000,
         /* Big cluster */
+        .big_scaling_governor = "interactive",
+        .big_use_sched_load = 1,
+        .big_use_migration_notif = 1,
         .big_boost = 0,
         .big_boostpulse_duration = 0,
         .big_go_hispeed_load = 80,
@@ -103,22 +138,26 @@ static power_profile profiles[PROFILE_MAX] = {
         .big_scaling_max_freq = 1824000,
         .big_min_cpus = 0,
         .big_max_cpus = 2,
+        /* Input boost */
+        .input_boost_freq = "0:600000 1:600000 2:600000 3:600000 4:0 5:0",
+        .input_boost_ms = 40,
+        /* GPU */
+        .gpu_governor = "msm-adreno-tz",
+        .gpu_max_freq = 367000000,
+        .gpu_min_freq = 180000000,
+        .gpu_min_pwrlevel = 5,
+        .gpu_max_pwrlevel = 3,
+        .gpu_default_pwrlevel = 5,
     },
     [PROFILE_HIGH_PERFORMANCE] = {
         /* Little cluster */
-        .little_boost = 1,
-        .little_boostpulse_duration = 40,
-        .little_go_hispeed_load = 99,
-        .little_hispeed_freq = 600000,
-        .little_io_is_busy = 1,
-        .little_timer_rate = 50000,
-        .little_above_hispeed_delay = "19000",
-        .little_min_sample_time = 20000,
-        .little_max_freq_hysteresis = 0,
-        .little_target_loads = "71 384000:75 460000:69 600000:80 672000:76 787000:81 864000:81 960000:69 1248000:78",
+        .little_scaling_governor = "performance",
         .little_scaling_min_freq = 302400,
         .little_scaling_max_freq = 1440000,
         /* Big cluster */
+        .big_scaling_governor = "interactive",
+        .big_use_sched_load = 1,
+        .big_use_migration_notif = 1,
         .big_boost = 1,
         .big_boostpulse_duration = 100,
         .big_go_hispeed_load = 80,
@@ -133,9 +172,22 @@ static power_profile profiles[PROFILE_MAX] = {
         .big_scaling_max_freq = 1824000,
         .big_min_cpus = 2,
         .big_max_cpus = 2,
+        /* Input boost */
+        .input_boost_freq = "0:1440000 1:1440000 2:1440000 3:1440000 4:1824000 5:1824000",
+        .input_boost_ms = 100,
+        /* GPU */
+        .gpu_governor = "msm-adreno-tz",
+        .gpu_max_freq = 600000000,
+        .gpu_min_freq = 600000000,
+        .gpu_min_pwrlevel = 5,
+        .gpu_max_pwrlevel = 0,
+        .gpu_default_pwrlevel = 5,
     },
     [PROFILE_BIAS_POWER_SAVE] = {
         /* Little cluster */
+        .little_scaling_governor = "interactive",
+        .little_use_sched_load = 1,
+        .little_use_migration_notif = 1,
         .little_boost = 0,
         .little_boostpulse_duration = 0,
         .little_go_hispeed_load = 99,
@@ -151,9 +203,22 @@ static power_profile profiles[PROFILE_MAX] = {
         /* Big cluster */
         .big_min_cpus = 0,
         .big_max_cpus = 0,
+        /* Input boost */
+        .input_boost_freq = "0",
+        .input_boost_ms = 0,
+        /* GPU */
+        .gpu_governor = "powersave",
+        .gpu_max_freq = 180000000,
+        .gpu_min_freq = 180000000,
+        .gpu_min_pwrlevel = 5,
+        .gpu_max_pwrlevel = 5,
+        .gpu_default_pwrlevel = 5,
     },
     [PROFILE_BIAS_PERFORMANCE] = {
         /* Little cluster */
+        .little_scaling_governor = "interactive",
+        .little_use_sched_load = 1,
+        .little_use_migration_notif = 1,
         .little_boost = 1,
         .little_boostpulse_duration = 40,
         .little_go_hispeed_load = 90,
@@ -167,6 +232,9 @@ static power_profile profiles[PROFILE_MAX] = {
         .little_scaling_min_freq = 302400,
         .little_scaling_max_freq = 1440000,
         /* Big cluster */
+        .big_scaling_governor = "interactive",
+        .big_use_sched_load = 1,
+        .big_use_migration_notif = 1,
         .big_boost = 1,
         .big_boostpulse_duration = 40,
         .big_go_hispeed_load = 80,
@@ -181,5 +249,15 @@ static power_profile profiles[PROFILE_MAX] = {
         .big_scaling_max_freq = 1824000,
         .big_min_cpus = 2,
         .big_max_cpus = 2,
+        /* Input boost */
+        .input_boost_freq = "0:1248000 1:1248000 2:1248000 3:1248000 4:1248000 5:1248000",
+        .input_boost_ms = 40,
+        /* GPU */
+        .gpu_governor = "msm-adreno-tz",
+        .gpu_max_freq = 600000000,
+        .gpu_min_freq = 180000000,
+        .gpu_min_pwrlevel = 5,
+        .gpu_max_pwrlevel = 0,
+        .gpu_default_pwrlevel = 5,
     },
 };

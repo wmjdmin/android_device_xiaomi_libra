@@ -32,13 +32,16 @@
 #include "power.h"
 
 #define NODE_MAX (64)
-#define LITTLE_CPUFREQ_LIMIT_PATH "/sys/devices/system/cpu/cpu0/cpufreq/"
+#define LITTLE_CPUFREQ_PATH "/sys/devices/system/cpu/cpu0/cpufreq/"
 #define LITTLE_INTERACTIVE_PATH "/sys/devices/system/cpu/cpu0/cpufreq/interactive/"
 #define BIG_CPU_PATH "/sys/devices/system/cpu/cpu4/"
-#define BIG_CPUFREQ_LIMIT_PATH "/sys/devices/system/cpu/cpu4/cpufreq/"
+#define BIG_CPUFREQ_PATH "/sys/devices/system/cpu/cpu4/cpufreq/"
 #define BIG_INTERACTIVE_PATH "/sys/devices/system/cpu/cpu4/cpufreq/interactive/"
 #define BIG_MIN_CPU_PATH "/sys/devices/system/cpu/cpu4/core_ctl/"
 #define BIG_MAX_CPU_PATH "/sys/devices/system/cpu/cpu4/core_ctl/"
+#define CPU_BOOST_PATH "/sys/module/cpu_boost/parameters/"
+#define GPU_PATH "/sys/class/kgsl/kgsl-3d0/"
+#define GPU_DEVFREQ_PATH "/sys/class/kgsl/kgsl-3d0/devfreq/"
 #define TAP_TO_WAKE_NODE "/proc/touchscreen/double_tap_enable"
 
 static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
@@ -117,9 +120,6 @@ static void power_set_interactive(__attribute__((unused)) struct power_module *m
         return;
     }
 
-    // break out early if governor is not interactive
-    if (!check_governor()) return;
-
     if (current_power_profile == PROFILE_POWER_SAVE || current_power_profile == PROFILE_BIAS_POWER_SAVE) {
         ALOGD("Device is in power save mode, disabling big CPU cluster");
         sysfs_write_str(BIG_MAX_CPU_PATH "max_cpus", "0");
@@ -154,9 +154,6 @@ static void set_power_profile(int profile)
         return;
     }
 
-    // break out early if governor is not interactive
-    if (!check_governor()) return;
-
     if (profile == current_power_profile)
         return;
 
@@ -170,33 +167,47 @@ static void set_power_profile(int profile)
     }
 
     /* Little cluster */
-    sysfs_write_int(LITTLE_INTERACTIVE_PATH "boost",
-                    profiles[profile].little_boost);
-    sysfs_write_int(LITTLE_INTERACTIVE_PATH "boostpulse_duration",
-                    profiles[profile].little_boostpulse_duration);
-    sysfs_write_int(LITTLE_INTERACTIVE_PATH "go_hispeed_load",
-                    profiles[profile].little_go_hispeed_load);
-    sysfs_write_int(LITTLE_INTERACTIVE_PATH "hispeed_freq",
-                    profiles[profile].little_hispeed_freq);
-    sysfs_write_int(LITTLE_INTERACTIVE_PATH "io_is_busy",
-                    profiles[profile].little_io_is_busy);
-    sysfs_write_str(LITTLE_INTERACTIVE_PATH "above_hispeed_delay",
-                    profiles[profile].little_above_hispeed_delay);
-    sysfs_write_int(LITTLE_INTERACTIVE_PATH "timer_rate",
-                    profiles[profile].little_timer_rate);
-    sysfs_write_int(LITTLE_INTERACTIVE_PATH "min_sample_time",
-                    profiles[profile].little_min_sample_time);
-    sysfs_write_int(LITTLE_INTERACTIVE_PATH "max_freq_hysteresis",
-                    profiles[profile].little_max_freq_hysteresis);
-    sysfs_write_str(LITTLE_INTERACTIVE_PATH "target_loads",
-                    profiles[profile].little_target_loads);
-    sysfs_write_int(LITTLE_CPUFREQ_LIMIT_PATH "scaling_min_freq",
+    sysfs_write_str(LITTLE_CPUFREQ_PATH "scaling_governor",
+                    profiles[profile].little_scaling_governor);
+    if (profile != PROFILE_HIGH_PERFORMANCE) {
+        sysfs_write_int(LITTLE_INTERACTIVE_PATH "use_sched_load",
+                        profiles[profile].little_use_sched_load);
+        sysfs_write_int(LITTLE_INTERACTIVE_PATH "use_migration_notif",
+                        profiles[profile].little_use_migration_notif);
+        sysfs_write_int(LITTLE_INTERACTIVE_PATH "boost",
+                        profiles[profile].little_boost);
+        sysfs_write_int(LITTLE_INTERACTIVE_PATH "boostpulse_duration",
+                        profiles[profile].little_boostpulse_duration);
+        sysfs_write_int(LITTLE_INTERACTIVE_PATH "go_hispeed_load",
+                        profiles[profile].little_go_hispeed_load);
+        sysfs_write_int(LITTLE_INTERACTIVE_PATH "hispeed_freq",
+                        profiles[profile].little_hispeed_freq);
+        sysfs_write_int(LITTLE_INTERACTIVE_PATH "io_is_busy",
+                        profiles[profile].little_io_is_busy);
+        sysfs_write_str(LITTLE_INTERACTIVE_PATH "above_hispeed_delay",
+                        profiles[profile].little_above_hispeed_delay);
+        sysfs_write_int(LITTLE_INTERACTIVE_PATH "timer_rate",
+                        profiles[profile].little_timer_rate);
+        sysfs_write_int(LITTLE_INTERACTIVE_PATH "min_sample_time",
+                        profiles[profile].little_min_sample_time);
+        sysfs_write_int(LITTLE_INTERACTIVE_PATH "max_freq_hysteresis",
+                        profiles[profile].little_max_freq_hysteresis);
+        sysfs_write_str(LITTLE_INTERACTIVE_PATH "target_loads",
+                        profiles[profile].little_target_loads);
+    }
+    sysfs_write_int(LITTLE_CPUFREQ_PATH "scaling_min_freq",
                     profiles[profile].little_scaling_min_freq);
-    sysfs_write_int(LITTLE_CPUFREQ_LIMIT_PATH "scaling_max_freq",
+    sysfs_write_int(LITTLE_CPUFREQ_PATH "scaling_max_freq",
                     profiles[profile].little_scaling_max_freq);
 
     /* Big cluster */
     if (profile != PROFILE_POWER_SAVE && profile != PROFILE_BIAS_POWER_SAVE) {
+		sysfs_write_str(BIG_CPUFREQ_PATH "scaling_governor",
+                        profiles[profile].big_scaling_governor);
+		sysfs_write_int(BIG_INTERACTIVE_PATH "use_sched_load",
+                        profiles[profile].big_use_sched_load);
+        sysfs_write_int(BIG_INTERACTIVE_PATH "use_migration_notif",
+                        profiles[profile].big_use_migration_notif);
         sysfs_write_int(BIG_INTERACTIVE_PATH "boost",
                         profiles[profile].big_boost);
         sysfs_write_int(BIG_INTERACTIVE_PATH "boostpulse_duration",
@@ -217,15 +228,35 @@ static void set_power_profile(int profile)
                         profiles[profile].big_max_freq_hysteresis);
         sysfs_write_str(BIG_INTERACTIVE_PATH "target_loads",
                         profiles[profile].big_target_loads);
-        sysfs_write_int(BIG_CPUFREQ_LIMIT_PATH "scaling_min_freq",
+        sysfs_write_int(BIG_CPUFREQ_PATH "scaling_min_freq",
                         profiles[profile].big_scaling_min_freq);
-        sysfs_write_int(BIG_CPUFREQ_LIMIT_PATH "scaling_max_freq",
+        sysfs_write_int(BIG_CPUFREQ_PATH "scaling_max_freq",
                         profiles[profile].big_scaling_max_freq);
     }
     sysfs_write_int(BIG_MIN_CPU_PATH "min_cpus",
                     profiles[profile].big_min_cpus);
     sysfs_write_int(BIG_MAX_CPU_PATH "max_cpus",
                     profiles[profile].big_max_cpus);
+
+    /* Input boost */
+    sysfs_write_str(CPU_BOOST_PATH "input_boost_freq",
+                    profiles[profile].input_boost_freq);
+    sysfs_write_int(CPU_BOOST_PATH "input_boost_ms",
+                    profiles[profile].input_boost_ms);
+
+    /* GPU */
+    sysfs_write_str(GPU_DEVFREQ_PATH "governor",
+                    profiles[profile].gpu_governor);
+    sysfs_write_int(GPU_DEVFREQ_PATH "max_freq",
+                    profiles[profile].gpu_min_freq);
+    sysfs_write_int(GPU_DEVFREQ_PATH "max_freq",
+                    profiles[profile].gpu_min_freq);
+    sysfs_write_int(GPU_PATH "min_pwrlevel",
+                    profiles[profile].gpu_min_pwrlevel);
+    sysfs_write_int(GPU_PATH "max_pwrlevel",
+                    profiles[profile].gpu_max_pwrlevel);
+    sysfs_write_int(GPU_PATH "default_pwrlevel",
+                    profiles[profile].gpu_default_pwrlevel);
 
     current_power_profile = profile;
 }
