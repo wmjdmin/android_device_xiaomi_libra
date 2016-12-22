@@ -97,10 +97,6 @@ on early-boot
 on boot
     symlink /dev/block/platform/soc.0/f9824900.sdhci /dev/block/bootdevice
 
-    # execute script to set initial CPU settings
-    # don't run as a service to avoid race conditions
-    exec u:r:init-power-sh:s0 root root system -- /system/bin/init.qcom.power.sh
-
     # update foreground cpuset now that processors are up
     # foreground gets all CPUs except CPU 3
     # CPU 3 is reserved for the top app
@@ -542,6 +538,12 @@ service qcom-sh /system/bin/init.qcom.sh
     group system
     oneshot
 
+service qcom-post-boot /system/bin/sh /system/etc/init.qcom.post_boot.sh
+    class late_start
+    user root
+    disabled
+    oneshot
+
 # bugreport is triggered by holding down volume down, volume up and power
 service bugreport /system/bin/dumpstate -d -p -B \
         -o /data/data/com.android.shell/files/bugreports/bugreport
@@ -561,6 +563,9 @@ on property:init.svc.xiaomi_hwaddrs=stopped
     chown system wifi /data/misc/wifi/wlan_mac.bin
     chmod 644 /data/misc/bluetooth/bdaddr.txt
     chown bluetooth bluetooth /data/misc/bluetooth/bdaddr.txt
+
+on property:sys.boot_completed=1
+    start qcom-post-boot
 
 service energy-awareness /system/bin/energy-awareness
     class main

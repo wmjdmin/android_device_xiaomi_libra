@@ -57,7 +57,7 @@ BOARD_RAMDISK_OFFSET     := 0x02000000
 BOARD_KERNEL_CMDLINE := console=ttyHSL0,115200,n8 androidboot.hardware=qcom boot_cpus=0-5
 BOARD_KERNEL_CMDLINE += lpm_levels.sleep_disabled=1 msm_poweroff.download_mode=0
 #BOARD_KERNEL_CMDLINE += synaptics_dsx.startup_fw_update=1
-#BOARD_KERNEL_CMDLINE += androidboot.selinux=permissive
+BOARD_KERNEL_CMDLINE += androidboot.selinux=permissive
 
 BOARD_MKBOOTIMG_ARGS := --ramdisk_offset $(BOARD_RAMDISK_OFFSET) --tags_offset $(BOARD_KERNEL_TAGS_OFFSET)
 
@@ -226,17 +226,13 @@ TARGET_HAS_LEGACY_CAMERA_HAL1 := true
 TARGET_PER_MGR_ENABLED := true
 
 # Power
-TARGET_POWERHAL_SET_INTERACTIVE_EXT := device/xiaomi/libra/power/power_ext.c
-TARGET_POWERHAL_VARIANT := qcom
+TARGET_POWERHAL_VARIANT := tspower
 
 # Sensors
 TARGET_NO_SENSOR_PERMISSION_CHECK := true
 
 # Include an expanded selection of fonts
 EXTENDED_FONT_FOOTPRINT := true
-
-# Double tap to wake
-TARGET_TAP_TO_WAKE_NODE := "/proc/touchscreen/double_tap_enable"
 
 # CM Hardware
 BOARD_USES_CYANOGEN_HARDWARE := true

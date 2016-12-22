@@ -120,7 +120,8 @@ PRODUCT_TAGS += dalvik.gc.type-precise
 
 # Init
 PRODUCT_PACKAGES += \
-    init.qcom.power.sh \
+    init.qcom.post_boot.sh \
+    ts_power.sh \
     fstab.qcom \
     init.aqua.rc \
     init.qcom.diag.rc \
