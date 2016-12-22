@@ -1,0 +1,24 @@
+allow qti_init_shell proc_kernel_sched:file { open write };
+allow qti_init_shell qti_init_shell:process execmem;
+allow qti_init_shell servicemanager:binder call;
+allow qti_init_shell sysfs:dir setattr;
+allow qti_init_shell sysfs:lnk_file setattr;
+allow qti_init_shell sysfs_devices_system_cpu:dir setattr;
+allow qti_init_shell sysfs_devices_system_cpu:file setattr;
+allow qti_init_shell sysfs_devices_system_cpu:lnk_file setattr;
+allow qti_init_shell sysfs_mpdecision:file { getattr setattr };
+allow qti_init_shell sysfs_performance:dir { open read search setattr };
+allow qti_init_shell sysfs_performance:file { getattr open setattr write };
+allow qti_init_shell sysfs_power_management:file write;
+allow qti_init_shell sysfs_rqstats:dir { open read search setattr };
+allow qti_init_shell sysfs_thermal:dir setattr;
+allow qti_init_shell sysfs_thermal:file setattr;
+allow qti_init_shell sysfs_thermal:lnk_file setattr;
+allow qti_init_shell zygote_exec:file { execute execute_no_trans getattr open read };
+
+
+
+
+
+
+
