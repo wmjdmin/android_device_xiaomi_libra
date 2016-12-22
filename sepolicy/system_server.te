@@ -17,5 +17,5 @@ allow system_server unlabeled:file unlink;
 allow system_server zygote:binder call;
 allow system_server sysfs_thermal:file write;
 allow system_server shell_exec:file { execute execute_no_trans getattr open read };
-allow system_server mpctl_data_file:file unlink;
+allow system_server mpctl_data_file:file { getattr unlink };
 allow system_server mpctl_data_file:dir { getattr remove_name search write };
