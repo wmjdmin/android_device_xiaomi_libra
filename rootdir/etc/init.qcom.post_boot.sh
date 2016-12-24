@@ -163,12 +163,6 @@ echo 5 > /sys/class/kgsl/kgsl-3d0/default_pwrlevel
 # android background processes are set to nice 10. Never schedule these on the a57s.
 echo 9 > /proc/sys/kernel/sched_upmigrate_min_nice
 
-# Configure foreground and background cpuset
-echo "0-5" > /dev/cpuset/foreground/cpus
-echo "4-5" > /dev/cpuset/foreground/boost/cpus
-echo "0" > /dev/cpuset/background/cpus
-echo "0-3" > /dev/cpuset/system-background/cpus
-
 # Disable sched_boost
 echo 0 > /proc/sys/kernel/sched_boost
 
