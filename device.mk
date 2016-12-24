@@ -240,7 +240,7 @@ PRODUCT_PACKAGES += \
     hostapd \
     wpa_supplicant \
     wpa_supplicant.conf \
-    xiaomi_hwaddrs
+    readmac
 
 # IPA Manager
 PRODUCT_PACKAGES += \
