@@ -1,5 +1,25 @@
 #!/system/bin/sh
 
+################################################################################
+# helper functions to allow Android init like script
+
+function write() {
+    echo -n $2 > $1
+}
+
+function copy() {
+    cat $1 > $2
+}
+
+function get-set-forall() {
+    for f in $1 ; do
+        cat $f
+        write $f $2
+    done
+}
+
+################################################################################
+
 LOG_TAG="TS PowerHAL (sh)"
 LOG_NAME="${0}:"
 
@@ -26,24 +46,24 @@ if [ "$action" = "set_interactive" ]; then
     if [ "$value" = "0" ]; then
         # Display off
         # Turn off big cluster while display is off
-        echo 0 > /sys/devices/system/cpu/cpu4/core_ctl/max_cpus
+        write /sys/devices/system/cpu/cpu4/core_ctl/max_cpus 0
     else
         # Display on
         # Turn on big cluster while display is on
         case "$profile" in
             "0"|"3")
                 # POWER_SAVE / PROFILE_BIAS_POWER_SAVE -> big cluster off
-                echo 0 > /sys/devices/system/cpu/cpu4/core_ctl/max_cpus
+                write /sys/devices/system/cpu/cpu4/core_ctl/max_cpus 0
             ;;
             "2"|"4")
                 # HIGH_PERFORMANCE / BIAS_PERFORMANCE -> big cluster on
-                echo 2 > /sys/devices/system/cpu/cpu4/core_ctl/max_cpus
-                echo 2 > /sys/devices/system/cpu/cpu4/core_ctl/min_cpus
+                write /sys/devices/system/cpu/cpu4/core_ctl/max_cpus 2
+                write /sys/devices/system/cpu/cpu4/core_ctl/min_cpus 2
             ;;
             *)
                 # BALANCED
-                echo 2 > /sys/devices/system/cpu/cpu4/core_ctl/max_cpus
-                echo 0 > /sys/devices/system/cpu/cpu4/core_ctl/min_cpus
+                write /sys/devices/system/cpu/cpu4/core_ctl/max_cpus 2
+                write /sys/devices/system/cpu/cpu4/core_ctl/min_cpus 0
             ;;
         esac
     fi
@@ -58,32 +78,23 @@ if [ "$perfd_running" = "running" ]; then
 fi
 
 # Make sure core_ctl does not hotplug big cluster
-echo "2" > /sys/devices/system/cpu/cpu4/core_ctl/max_cpus
-echo "2" > /sys/devices/system/cpu/cpu4/core_ctl/min_cpus
+write /sys/devices/system/cpu/cpu4/core_ctl/max_cpus 2
+write /sys/devices/system/cpu/cpu4/core_ctl/min_cpus 2
 
 # Disable thermal and bcl hotplug to switch governor
-echo 0 > /sys/module/msm_thermal/core_control/enabled
-for mode in /sys/devices/soc.0/qcom,bcl.*/mode
-do
-    echo -n disable > $mode
-done
-for hotplug_mask in /sys/devices/soc.0/qcom,bcl.*/hotplug_mask
-do
-    bcl_hotplug_mask=`cat $hotplug_mask`
-    echo 0 > $hotplug_mask
-done
-for hotplug_soc_mask in /sys/devices/soc.0/qcom,bcl.*/hotplug_soc_mask
-do
-    bcl_soc_hotplug_mask=`cat $hotplug_soc_mask`
-    echo 0 > $hotplug_soc_mask
-done
-for mode in /sys/devices/soc.0/qcom,bcl.*/mode
-do
-    echo -n enable > $mode
-done
+write /sys/module/msm_thermal/core_control/enabled 0
+get-set-forall /sys/devices/soc.0/qcom,bcl.*/mode disable
+bcl_hotplug_mask=`get-set-forall /sys/devices/soc.0/qcom,bcl.*/hotplug_mask 0`
+bcl_hotplug_soc_mask=`get-set-forall /sys/devices/soc.0/qcom,bcl.*/hotplug_soc_mask 0`
+get-set-forall /sys/devices/soc.0/qcom,bcl.*/mode enable
 
 # Make sure CPU4 is online for config
-echo "1" > /sys/devices/system/cpu/cpu4/online
+write /sys/devices/system/cpu/cpu4/online 1
+
+# some files in /sys/devices/system/cpu are created after the restorecon of
+# /sys/. These files receive the default label "sysfs".
+# Restorecon again to give new files the correct label.
+restorecon -R /sys/devices/system/cpu
 
 # Just note to self
 # /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies
@@ -107,35 +118,36 @@ case "$profile" in
         logi "POWER_SAVE / PROFILE_BIAS_POWER_SAVE"
 
         # Configure governor settings for little cluster
-        #echo "smartmax" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
-        echo "interactive" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
-        echo 1 > /sys/devices/system/cpu/cpu0/cpufreq/interactive/use_sched_load
-        echo 1 > /sys/devices/system/cpu/cpu0/cpufreq/interactive/use_migration_notif
-        echo 19000 > /sys/devices/system/cpu/cpu0/cpufreq/interactive/above_hispeed_delay
-        echo 99 > /sys/devices/system/cpu/cpu0/cpufreq/interactive/go_hispeed_load
-        echo 50000 > /sys/devices/system/cpu/cpu0/cpufreq/interactive/timer_rate
-        echo 1 > /sys/devices/system/cpu/cpu0/cpufreq/interactive/io_is_busy
-        echo 600000 > /sys/devices/system/cpu/cpu0/cpufreq/interactive/hispeed_freq
-        echo "65 460800:63 600000:45 672000:35 787200:47 864000:78 960000:82 1248000:86 1440000:99" > /sys/devices/system/cpu/cpu0/cpufreq/interactive/target_loads        
-        echo 50000 > /sys/devices/system/cpu/cpu0/cpufreq/interactive/min_sample_time
-        echo 0 > /sys/devices/system/cpu/cpu0/cpufreq/interactive/max_freq_hysteresis
-        echo "0" > /sys/devices/system/cpu/cpu0/cpufreq/interactive/boostpulse_duration
-        echo "1440000" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+        #write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor smartmax
+        write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor interactive
+        restorecon -R /sys/devices/system/cpu # must restore after interactive
+        write /sys/devices/system/cpu/cpu0/cpufreq/interactive/use_sched_load 1
+        write /sys/devices/system/cpu/cpu0/cpufreq/interactive/use_migration_notif 1
+        write /sys/devices/system/cpu/cpu0/cpufreq/interactive/above_hispeed_delay 19000
+        write /sys/devices/system/cpu/cpu0/cpufreq/interactive/go_hispeed_load 99
+        write /sys/devices/system/cpu/cpu0/cpufreq/interactive/timer_rate 50000
+        write /sys/devices/system/cpu/cpu0/cpufreq/interactive/io_is_busy 1
+        write /sys/devices/system/cpu/cpu0/cpufreq/interactive/hispeed_freq 600000
+        write /sys/devices/system/cpu/cpu0/cpufreq/interactive/target_loads "65 460800:63 600000:45 672000:35 787200:47 864000:78 960000:82 1248000:86 1440000:99"      
+        write /sys/devices/system/cpu/cpu0/cpufreq/interactive/min_sample_time 50000
+        write /sys/devices/system/cpu/cpu0/cpufreq/interactive/max_freq_hysteresis 0
+        write /sys/devices/system/cpu/cpu0/cpufreq/interactive/boostpulse_duration 0
+        write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 1440000
 
         # Big cluster always off
-        echo 0 > /sys/devices/system/cpu/cpu4/core_ctl/max_cpus
-        echo 0 > /sys/devices/system/cpu/cpu4/core_ctl/min_cpus
+        write /sys/devices/system/cpu/cpu4/core_ctl/max_cpus 0
+        write /sys/devices/system/cpu/cpu4/core_ctl/min_cpus 0
 
         # 0ms input boost
-        echo 0 > /sys/module/cpu_boost/parameters/input_boost_freq
-        echo 0 > /sys/module/cpu_boost/parameters/input_boost_ms
+        write /sys/module/cpu_boost/parameters/input_boost_freq 0
+        write /sys/module/cpu_boost/parameters/input_boost_ms 0
 
         # 180Mhz GPU max speed
-        echo "powersave" > /sys/class/kgsl/kgsl-3d0/devfreq/governor
-        echo 180000000 > /sys/class/kgsl/kgsl-3d0/devfreq/max_freq
-        echo 5 > /sys/class/kgsl/kgsl-3d0/min_pwrlevel
-        echo 5 > /sys/class/kgsl/kgsl-3d0/max_pwrlevel
-        echo 5 > /sys/class/kgsl/kgsl-3d0/default_pwrlevel
+        write /sys/class/kgsl/kgsl-3d0/devfreq/governor powersave
+        write /sys/class/kgsl/kgsl-3d0/devfreq/max_freq 180000000
+        write /sys/class/kgsl/kgsl-3d0/min_pwrlevel 5
+        write /sys/class/kgsl/kgsl-3d0/max_pwrlevel 5
+        write /sys/class/kgsl/kgsl-3d0/default_pwrlevel 5
         ;;
 
     # PROFILE_BALANCED = 1
@@ -145,48 +157,50 @@ case "$profile" in
         logi "BALANCED"
 
         # Configure governor settings for little cluster
-        echo "interactive" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
-        echo 1 > /sys/devices/system/cpu/cpu0/cpufreq/interactive/use_sched_load
-        echo 1 > /sys/devices/system/cpu/cpu0/cpufreq/interactive/use_migration_notif
-        echo 19000 > /sys/devices/system/cpu/cpu0/cpufreq/interactive/above_hispeed_delay
-        echo 99 > /sys/devices/system/cpu/cpu0/cpufreq/interactive/go_hispeed_load
-        echo 50000 > /sys/devices/system/cpu/cpu0/cpufreq/interactive/timer_rate
-        echo 1 > /sys/devices/system/cpu/cpu0/cpufreq/interactive/io_is_busy
-        echo 600000 > /sys/devices/system/cpu/cpu0/cpufreq/interactive/hispeed_freq
-        echo "65 460800:63 600000:45 672000:35 787200:47 864000:78 960000:82 1248000:86 1440000:99" > /sys/devices/system/cpu/cpu0/cpufreq/interactive/target_loads        
-        echo 20000 > /sys/devices/system/cpu/cpu0/cpufreq/interactive/min_sample_time
-        echo 0 > /sys/devices/system/cpu/cpu0/cpufreq/interactive/max_freq_hysteresis
-        echo "40" > /sys/devices/system/cpu/cpu0/cpufreq/interactive/boostpulse_duration
-        echo "1440000" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+        write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor interactive
+        restorecon -R /sys/devices/system/cpu # must restore after interactive
+        write /sys/devices/system/cpu/cpu0/cpufreq/interactive/use_sched_load 1
+        write /sys/devices/system/cpu/cpu0/cpufreq/interactive/use_migration_notif 1
+        write /sys/devices/system/cpu/cpu0/cpufreq/interactive/above_hispeed_delay 19000
+        write /sys/devices/system/cpu/cpu0/cpufreq/interactive/go_hispeed_load 99
+        write /sys/devices/system/cpu/cpu0/cpufreq/interactive/timer_rate 50000
+        write /sys/devices/system/cpu/cpu0/cpufreq/interactive/io_is_busy 1
+        write /sys/devices/system/cpu/cpu0/cpufreq/interactive/hispeed_freq 600000
+        write /sys/devices/system/cpu/cpu0/cpufreq/interactive/target_loads "65 460800:63 600000:45 672000:35 787200:47 864000:78 960000:82 1248000:86 1440000:99"
+        write /sys/devices/system/cpu/cpu0/cpufreq/interactive/min_sample_time 20000
+        write /sys/devices/system/cpu/cpu0/cpufreq/interactive/max_freq_hysteresis 0
+        write /sys/devices/system/cpu/cpu0/cpufreq/interactive/boostpulse_duration 40
+        write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 1440000
 
         # Configure governor settings for big cluster
-        echo "interactive" > /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor
-        echo 1 > /sys/devices/system/cpu/cpu4/cpufreq/interactive/use_sched_load
-        echo 1 > /sys/devices/system/cpu/cpu4/cpufreq/interactive/use_migration_notif
-        echo "50000 1440000:20000" > /sys/devices/system/cpu/cpu4/cpufreq/interactive/above_hispeed_delay
-        echo 80 > /sys/devices/system/cpu/cpu4/cpufreq/interactive/go_hispeed_load
-        echo 50000 > /sys/devices/system/cpu/cpu4/cpufreq/interactive/timer_rate
-        echo 633600 > /sys/devices/system/cpu/cpu4/cpufreq/interactive/hispeed_freq
-        echo 1 > /sys/devices/system/cpu/cpu4/cpufreq/interactive/io_is_busy
-        echo "95 633600:75 768000:80 864000:81 960000:81 1248000:85 1344000:85 1440000:85 1536000:85 1632000:86 1824000:87" > /sys/devices/system/cpu/cpu4/cpufreq/interactive/target_loads
-        echo "0" > /sys/devices/system/cpu/cpu4/cpufreq/interactive/boostpulse_duration
-        echo 50000 > /sys/devices/system/cpu/cpu4/cpufreq/interactive/min_sample_time
-        echo 0 > /sys/devices/system/cpu/cpu4/cpufreq/interactive/max_freq_hysteresis
+        write /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor interactive
+        restorecon -R /sys/devices/system/cpu # must restore after interactive
+        write /sys/devices/system/cpu/cpu4/cpufreq/interactive/use_sched_load 1
+        write /sys/devices/system/cpu/cpu4/cpufreq/interactive/use_migration_notif 1
+        write /sys/devices/system/cpu/cpu4/cpufreq/interactive/above_hispeed_delay "50000 1440000:20000"
+        write /sys/devices/system/cpu/cpu4/cpufreq/interactive/go_hispeed_load 80
+        write /sys/devices/system/cpu/cpu4/cpufreq/interactive/timer_rate 50000
+        write /sys/devices/system/cpu/cpu4/cpufreq/interactive/hispeed_freq 633600
+        write /sys/devices/system/cpu/cpu4/cpufreq/interactive/io_is_busy 1
+        write /sys/devices/system/cpu/cpu4/cpufreq/interactive/target_loads "95 633600:75 768000:80 864000:81 960000:81 1248000:85 1344000:85 1440000:85 1536000:85 1632000:86 1824000:87"
+        write /sys/devices/system/cpu/cpu4/cpufreq/interactive/boostpulse_duration 0
+        write /sys/devices/system/cpu/cpu4/cpufreq/interactive/min_sample_time 50000
+        write /sys/devices/system/cpu/cpu4/cpufreq/interactive/max_freq_hysteresis 0
 
         # Big cluster hotplugged by core_ctl
-        echo 2 > /sys/devices/system/cpu/cpu4/core_ctl/max_cpus
-        echo 0 > /sys/devices/system/cpu/cpu4/core_ctl/min_cpus
+        write /sys/devices/system/cpu/cpu4/core_ctl/max_cpus 2
+        write /sys/devices/system/cpu/cpu4/core_ctl/min_cpus 0
 
         # 40ms input boost @ 600Mhz (only little cluster)
-        echo "0:600000 1:600000 2:600000 3:600000 4:0 5:0" > /sys/module/cpu_boost/parameters/input_boost_freq
-        echo 40 > /sys/module/cpu_boost/parameters/input_boost_ms
+        write /sys/module/cpu_boost/parameters/input_boost_freq "0:600000 1:600000 2:600000 3:600000 4:0 5:0"
+        write /sys/module/cpu_boost/parameters/input_boost_ms 40
 
         # 367Mhz GPU max speed
-        echo "msm-adreno-tz" > /sys/class/kgsl/kgsl-3d0/devfreq/governor
-        echo 367000000 > /sys/class/kgsl/kgsl-3d0/devfreq/max_freq
-        echo 5 > /sys/class/kgsl/kgsl-3d0/min_pwrlevel
-        echo 3 > /sys/class/kgsl/kgsl-3d0/max_pwrlevel
-        echo 5 > /sys/class/kgsl/kgsl-3d0/default_pwrlevel
+        write /sys/class/kgsl/kgsl-3d0/devfreq/governor msm-adreno-tz
+        write /sys/class/kgsl/kgsl-3d0/devfreq/max_freq 367000000
+        write /sys/class/kgsl/kgsl-3d0/min_pwrlevel 5
+        write /sys/class/kgsl/kgsl-3d0/max_pwrlevel 3
+        write /sys/class/kgsl/kgsl-3d0/default_pwrlevel 5
         ;;
 
     # PROFILE_BIAS_PERFORMANCE = 4
@@ -196,48 +210,50 @@ case "$profile" in
         logi "BIAS_PERFORMANCE"
 
         # Configure governor settings for little cluster
-        echo "interactive" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
-        echo 1 > /sys/devices/system/cpu/cpu0/cpufreq/interactive/use_sched_load
-        echo 1 > /sys/devices/system/cpu/cpu0/cpufreq/interactive/use_migration_notif
-        echo 19000 > /sys/devices/system/cpu/cpu0/cpufreq/interactive/above_hispeed_delay
-        echo 90 > /sys/devices/system/cpu/cpu0/cpufreq/interactive/go_hispeed_load
-        echo 20000 > /sys/devices/system/cpu/cpu0/cpufreq/interactive/timer_rate
-        echo 1 > /sys/devices/system/cpu/cpu0/cpufreq/interactive/io_is_busy
-        echo 1248000 > /sys/devices/system/cpu/cpu0/cpufreq/interactive/hispeed_freq
-        echo 65 > /sys/devices/system/cpu/cpu0/cpufreq/interactive/target_loads
-        echo 20000 > /sys/devices/system/cpu/cpu0/cpufreq/interactive/min_sample_time
-        echo 80000 > /sys/devices/system/cpu/cpu0/cpufreq/interactive/max_freq_hysteresis
-        echo "40" > /sys/devices/system/cpu/cpu0/cpufreq/interactive/boostpulse_duration
-        echo "1440000" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+        write "interactive" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor interactive
+        restorecon -R /sys/devices/system/cpu # must restore after interactive
+        write /sys/devices/system/cpu/cpu0/cpufreq/interactive/use_sched_load 1
+        write /sys/devices/system/cpu/cpu0/cpufreq/interactive/use_migration_notif 1
+        write /sys/devices/system/cpu/cpu0/cpufreq/interactive/above_hispeed_delay 19000
+        write /sys/devices/system/cpu/cpu0/cpufreq/interactive/go_hispeed_load 90
+        write /sys/devices/system/cpu/cpu0/cpufreq/interactive/timer_rate 20000
+        write /sys/devices/system/cpu/cpu0/cpufreq/interactive/io_is_busy 1
+        write /sys/devices/system/cpu/cpu0/cpufreq/interactive/hispeed_freq 1248000
+        write /sys/devices/system/cpu/cpu0/cpufreq/interactive/target_loads 65
+        write /sys/devices/system/cpu/cpu0/cpufreq/interactive/min_sample_time 20000
+        write /sys/devices/system/cpu/cpu0/cpufreq/interactive/max_freq_hysteresis 80000
+        write /sys/devices/system/cpu/cpu0/cpufreq/interactive/boostpulse_duration 40
+        write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 1440000
 
         # Configure governor settings for big cluster
-        echo "interactive" > /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor
-        echo 1 > /sys/devices/system/cpu/cpu4/cpufreq/interactive/use_sched_load
-        echo 1 > /sys/devices/system/cpu/cpu4/cpufreq/interactive/use_migration_notif
-        echo 19000 > /sys/devices/system/cpu/cpu4/cpufreq/interactive/above_hispeed_delay
-        echo 80 > /sys/devices/system/cpu/cpu4/cpufreq/interactive/go_hispeed_load
-        echo 20000 > /sys/devices/system/cpu/cpu4/cpufreq/interactive/timer_rate
-        echo 1248000 > /sys/devices/system/cpu/cpu4/cpufreq/interactive/hispeed_freq
-        echo 1 > /sys/devices/system/cpu/cpu4/cpufreq/interactive/io_is_busy
-        echo 85 > /sys/devices/system/cpu/cpu4/cpufreq/interactive/target_loads
-        echo "40" > /sys/devices/system/cpu/cpu4/cpufreq/interactive/boostpulse_duration
-        echo 40000 > /sys/devices/system/cpu/cpu4/cpufreq/interactive/min_sample_time
-        echo 80000 > /sys/devices/system/cpu/cpu4/cpufreq/interactive/max_freq_hysteresis
+        write /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor interactive
+        restorecon -R /sys/devices/system/cpu # must restore after interactive
+        write /sys/devices/system/cpu/cpu4/cpufreq/interactive/use_sched_load 1
+        write /sys/devices/system/cpu/cpu4/cpufreq/interactive/use_migration_notif 1
+        write /sys/devices/system/cpu/cpu4/cpufreq/interactive/above_hispeed_delay 19000
+        write /sys/devices/system/cpu/cpu4/cpufreq/interactive/go_hispeed_load 80
+        write /sys/devices/system/cpu/cpu4/cpufreq/interactive/timer_rate 20000
+        write /sys/devices/system/cpu/cpu4/cpufreq/interactive/hispeed_freq 1248000
+        write /sys/devices/system/cpu/cpu4/cpufreq/interactive/io_is_busy 1
+        write /sys/devices/system/cpu/cpu4/cpufreq/interactive/target_loads 85
+        write /sys/devices/system/cpu/cpu4/cpufreq/interactive/boostpulse_duration 40
+        write /sys/devices/system/cpu/cpu4/cpufreq/interactive/min_sample_time 40000
+        write /sys/devices/system/cpu/cpu4/cpufreq/interactive/max_freq_hysteresis 80000
 
         # Big cluster always on
-        echo 2 > /sys/devices/system/cpu/cpu4/core_ctl/max_cpus
-        echo 2 > /sys/devices/system/cpu/cpu4/core_ctl/min_cpus
+        write /sys/devices/system/cpu/cpu4/core_ctl/max_cpus 2
+        write /sys/devices/system/cpu/cpu4/core_ctl/min_cpus 2
 
         # 40ms input boost @ 1.2Ghz
-        echo "0:1248000 1:1248000 2:1248000 3:1248000 4:1248000 5:1248000" > /sys/module/cpu_boost/parameters/input_boost_freq
-        echo 40 > /sys/module/cpu_boost/parameters/input_boost_ms
+        write /sys/module/cpu_boost/parameters/input_boost_freq "0:1248000 1:1248000 2:1248000 3:1248000 4:1248000 5:1248000"
+        write /sys/module/cpu_boost/parameters/input_boost_ms 40
 
         # 600Mhz GPU max speed
-        echo "msm-adreno-tz" > /sys/class/kgsl/kgsl-3d0/devfreq/governor
-        echo 600000000 > /sys/class/kgsl/kgsl-3d0/devfreq/max_freq
-        echo 5 > /sys/class/kgsl/kgsl-3d0/min_pwrlevel
-        echo 0 > /sys/class/kgsl/kgsl-3d0/max_pwrlevel
-        echo 5 > /sys/class/kgsl/kgsl-3d0/default_pwrlevel
+        write /sys/class/kgsl/kgsl-3d0/devfreq/governor msm-adreno-tz
+        write /sys/class/kgsl/kgsl-3d0/devfreq/max_freq 600000000
+        write /sys/class/kgsl/kgsl-3d0/min_pwrlevel 5
+        write /sys/class/kgsl/kgsl-3d0/max_pwrlevel 0
+        write /sys/class/kgsl/kgsl-3d0/default_pwrlevel 5
         ;;
 
     # PROFILE_HIGH_PERFORMANCE = 2
@@ -247,39 +263,41 @@ case "$profile" in
         logi "HIGH_PERFORMANCE"
 
         # Configure governor settings for little cluster
-        echo "1440000" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
-        echo "performance" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+        write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 1440000
+        write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor performance
+        restorecon -R /sys/devices/system/cpu # must restore after performance
 
         # Configure governor settings for big cluster
-        echo "interactive" > /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor
-        echo 1 > /sys/devices/system/cpu/cpu4/cpufreq/interactive/use_sched_load
-        echo 1 > /sys/devices/system/cpu/cpu4/cpufreq/interactive/use_migration_notif
-        echo 19000 > /sys/devices/system/cpu/cpu4/cpufreq/interactive/above_hispeed_delay
-        echo 80 > /sys/devices/system/cpu/cpu4/cpufreq/interactive/go_hispeed_load
-        echo 20000 > /sys/devices/system/cpu/cpu4/cpufreq/interactive/timer_rate
-        echo 1248000 > /sys/devices/system/cpu/cpu4/cpufreq/interactive/hispeed_freq
-        echo 1 > /sys/devices/system/cpu/cpu4/cpufreq/interactive/io_is_busy
-        echo 85 > /sys/devices/system/cpu/cpu4/cpufreq/interactive/target_loads
-        echo "100" > /sys/devices/system/cpu/cpu4/cpufreq/interactive/boostpulse_duration
-        echo 40000 > /sys/devices/system/cpu/cpu4/cpufreq/interactive/min_sample_time
-        echo 80000 > /sys/devices/system/cpu/cpu4/cpufreq/interactive/max_freq_hysteresis
+        write "interactive" > /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor interactive
+        restorecon -R /sys/devices/system/cpu # must restore after interactive
+        write /sys/devices/system/cpu/cpu4/cpufreq/interactive/use_sched_load 1
+        write /sys/devices/system/cpu/cpu4/cpufreq/interactive/use_migration_notif 1
+        write /sys/devices/system/cpu/cpu4/cpufreq/interactive/above_hispeed_delay 19000
+        write /sys/devices/system/cpu/cpu4/cpufreq/interactive/go_hispeed_load 80
+        write /sys/devices/system/cpu/cpu4/cpufreq/interactive/timer_rate 20000
+        write /sys/devices/system/cpu/cpu4/cpufreq/interactive/hispeed_freq 1248000
+        write /sys/devices/system/cpu/cpu4/cpufreq/interactive/io_is_busy 1
+        write /sys/devices/system/cpu/cpu4/cpufreq/interactive/target_loads 85
+        write /sys/devices/system/cpu/cpu4/cpufreq/interactive/boostpulse_duration 100
+        write /sys/devices/system/cpu/cpu4/cpufreq/interactive/min_sample_time 40000
+        write /sys/devices/system/cpu/cpu4/cpufreq/interactive/max_freq_hysteresis 80000
 
         # Big cluster always on
-        echo 2 > /sys/devices/system/cpu/cpu4/core_ctl/max_cpus
-        echo 2 > /sys/devices/system/cpu/cpu4/core_ctl/min_cpus
+        write /sys/devices/system/cpu/cpu4/core_ctl/max_cpus 2
+        write /sys/devices/system/cpu/cpu4/core_ctl/min_cpus 2
 
         # 100ms input boost @ 1.4Ghz / 1.8Ghz
-        echo "0:1440000 1:1440000 2:1440000 3:1440000 4:1824000 5:1824000" > /sys/module/cpu_boost/parameters/input_boost_freq
-        echo 100 > /sys/module/cpu_boost/parameters/input_boost_ms
+        write /sys/module/cpu_boost/parameters/input_boost_freq "0:1440000 1:1440000 2:1440000 3:1440000 4:1824000 5:1824000"
+        write /sys/module/cpu_boost/parameters/input_boost_ms 100
 
         # 600Mhz GPU min and max speed
         # GPU locked at 600Mhz
-        echo "performance" > /sys/class/kgsl/kgsl-3d0/devfreq/governor
-        echo 600000000 > /sys/class/kgsl/kgsl-3d0/devfreq/min_freq
-        echo 600000000 > /sys/class/kgsl/kgsl-3d0/devfreq/max_freq
-        echo 0 > /sys/class/kgsl/kgsl-3d0/min_pwrlevel
-        echo 0 > /sys/class/kgsl/kgsl-3d0/max_pwrlevel
-        echo 0 > /sys/class/kgsl/kgsl-3d0/default_pwrlevel
+        write /sys/class/kgsl/kgsl-3d0/devfreq/governor performance
+        write /sys/class/kgsl/kgsl-3d0/devfreq/min_freq 600000000
+        write /sys/class/kgsl/kgsl-3d0/devfreq/max_freq 600000000
+        write /sys/class/kgsl/kgsl-3d0/min_pwrlevel 0
+        write /sys/class/kgsl/kgsl-3d0/max_pwrlevel 0
+        write /sys/class/kgsl/kgsl-3d0/default_pwrlevel 0
         ;;
 
     *)
@@ -287,23 +305,11 @@ case "$profile" in
 esac
 
 # Re-enable thermal and BCL hotplug
-echo 1 > /sys/module/msm_thermal/core_control/enabled
-for mode in /sys/devices/soc.0/qcom,bcl.*/mode
-do
-    echo -n disable > $mode
-done
-for hotplug_mask in /sys/devices/soc.0/qcom,bcl.*/hotplug_mask
-do
-    echo $bcl_hotplug_mask > $hotplug_mask
-done
-for hotplug_soc_mask in /sys/devices/soc.0/qcom,bcl.*/hotplug_soc_mask
-do
-    echo $bcl_soc_hotplug_mask > $hotplug_soc_mask
-done
-for mode in /sys/devices/soc.0/qcom,bcl.*/mode
-do
-    echo -n enable > $mode
-done
+write /sys/module/msm_thermal/core_control/enabled 1
+get-set-forall /sys/devices/soc.0/qcom,bcl.*/mode disable
+get-set-forall /sys/devices/soc.0/qcom,bcl.*/hotplug_mask $bcl_hotplug_mask
+get-set-forall /sys/devices/soc.0/qcom,bcl.*/hotplug_soc_mask $bcl_hotplug_soc_mask
+get-set-forall /sys/devices/soc.0/qcom,bcl.*/mode enable
 
 if [ "$perfd_running" = "running" ]; then
     # Restart perfd
