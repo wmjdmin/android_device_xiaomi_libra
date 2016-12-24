@@ -126,7 +126,6 @@ echo "4:4294967295 5:4294967295" > /sys/module/msm_performance/parameters/cpu_ma
 echo "0:600000 1:0 2:0 3:0 4:0 5:0" > /sys/module/cpu_boost/parameters/input_boost_freq
 echo 40 > /sys/module/cpu_boost/parameters/input_boost_ms
 # core_ctl module
-insmod /system/lib/modules/core_ctl.ko
 echo 2 > /sys/devices/system/cpu/cpu4/core_ctl/min_cpus
 echo 60 > /sys/devices/system/cpu/cpu4/core_ctl/busy_up_thres
 echo 30 > /sys/devices/system/cpu/cpu4/core_ctl/busy_down_thres
