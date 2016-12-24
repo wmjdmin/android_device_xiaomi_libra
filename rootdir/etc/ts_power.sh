@@ -109,13 +109,49 @@ restorecon -R /sys/devices/system/cpu
 # Handle power profile change
 case "$profile" in
     # PROFILE_POWER_SAVE = 0
-    # PROFILE_BIAS_POWER_SAVE = 3
     # Power save profile
     #   This mode sacrifices performance for maximum power saving.
+    "0")
+        logi "POWER_SAVE"
+
+        # Configure governor settings for little cluster
+        #write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor smartmax
+        write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor interactive
+        restorecon -R /sys/devices/system/cpu # must restore after interactive
+        write /sys/devices/system/cpu/cpu0/cpufreq/interactive/use_sched_load 1
+        write /sys/devices/system/cpu/cpu0/cpufreq/interactive/use_migration_notif 1
+        write /sys/devices/system/cpu/cpu0/cpufreq/interactive/above_hispeed_delay 19000
+        write /sys/devices/system/cpu/cpu0/cpufreq/interactive/go_hispeed_load 99
+        write /sys/devices/system/cpu/cpu0/cpufreq/interactive/timer_rate 50000
+        write /sys/devices/system/cpu/cpu0/cpufreq/interactive/io_is_busy 1
+        write /sys/devices/system/cpu/cpu0/cpufreq/interactive/hispeed_freq 600000
+        write /sys/devices/system/cpu/cpu0/cpufreq/interactive/target_loads "65 460800:63 600000:45 672000:35 787200:47 864000:78 960000:82 1248000:86 1440000:99"      
+        write /sys/devices/system/cpu/cpu0/cpufreq/interactive/min_sample_time 50000
+        write /sys/devices/system/cpu/cpu0/cpufreq/interactive/max_freq_hysteresis 0
+        write /sys/devices/system/cpu/cpu0/cpufreq/interactive/boostpulse_duration 0
+        write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 864000
+
+        # Big cluster always off
+        write /sys/devices/system/cpu/cpu4/core_ctl/max_cpus 0
+        write /sys/devices/system/cpu/cpu4/core_ctl/min_cpus 0
+
+        # 0ms input boost
+        write /sys/module/cpu_boost/parameters/input_boost_freq 0
+        write /sys/module/cpu_boost/parameters/input_boost_ms 0
+
+        # 180Mhz GPU max speed
+        write /sys/class/kgsl/kgsl-3d0/devfreq/governor powersave
+        write /sys/class/kgsl/kgsl-3d0/devfreq/max_freq 180000000
+        write /sys/class/kgsl/kgsl-3d0/min_pwrlevel 5
+        write /sys/class/kgsl/kgsl-3d0/max_pwrlevel 5
+        write /sys/class/kgsl/kgsl-3d0/default_pwrlevel 5
+        ;;
+
+    # PROFILE_BIAS_POWER_SAVE = 3
     # Power save bias profile
     #   This mode decreases performance slightly to improve power savings.
-    "0"|"3")
-        logi "POWER_SAVE / PROFILE_BIAS_POWER_SAVE"
+    "3")
+        logi "PROFILE_BIAS_POWER_SAVE"
 
         # Configure governor settings for little cluster
         #write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor smartmax
