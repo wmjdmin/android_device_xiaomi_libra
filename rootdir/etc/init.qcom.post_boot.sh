@@ -160,8 +160,8 @@ write /proc/sys/kernel/sched_migration_fixup 1
 write /proc/sys/kernel/sched_small_task 15 
 write /proc/sys/kernel/sched_mostly_idle_load 20
 write /proc/sys/kernel/sched_mostly_idle_nr_run 3
-write /proc/sys/kernel/sched_upmigrate 85
-write /proc/sys/kernel/sched_downmigrate 70
+write /proc/sys/kernel/sched_upmigrate 99
+write /proc/sys/kernel/sched_downmigrate 85
 write /proc/sys/kernel/sched_cpu_high_irqload 7500000
 write /proc/sys/kernel/sched_heavy_task 60
 write /proc/sys/kernel/sched_init_task_load 65
