@@ -47,6 +47,7 @@ if [ "$action" = "set_interactive" ]; then
         # Display off
         # Turn off big cluster while display is off
         write /sys/devices/system/cpu/cpu4/core_ctl/max_cpus 0
+        write /sys/devices/system/cpu/cpu4/core_ctl/min_cpus 0
     else
         # Display on
         # Turn on big cluster while display is on
@@ -54,6 +55,7 @@ if [ "$action" = "set_interactive" ]; then
             "0"|"3")
                 # POWER_SAVE / PROFILE_BIAS_POWER_SAVE -> big cluster off
                 write /sys/devices/system/cpu/cpu4/core_ctl/max_cpus 0
+                write /sys/devices/system/cpu/cpu4/core_ctl/min_cpus 0
             ;;
             "2"|"4")
                 # HIGH_PERFORMANCE / BIAS_PERFORMANCE -> big cluster on
