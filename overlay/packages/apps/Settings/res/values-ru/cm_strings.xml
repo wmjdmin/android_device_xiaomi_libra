@@ -175,6 +175,6 @@
     <string name="app_ops_summaries_run_in_background">работа в фоновом режиме</string>
 
     <!-- Hostname setting -->
-    <string name="device_hostname">Імя устройства</string>
+    <string name="device_hostname">Имя устройства</string>
 
 </resources>
