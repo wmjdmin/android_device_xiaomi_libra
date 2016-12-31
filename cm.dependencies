@@ -1,14 +1,27 @@
 [
   {
-    "repository": "android_kernel_xiaomi_libra",
-    "target_path": "kernel/xiaomi/libra"
+    "repository": "Xiaomi-Mi4c-CyanogenMod-14/android_kernel_xiaomi_msm8992",
+    "target_path": "kernel/xiaomi/msm8992",
+    "branch": "cm-14.1"
   },
   {
-    "repository": "android_external_stlport",
-    "target_path": "external/stlport"
+    "repository": "Xiaomi-Mi4c-CyanogenMod-14/proprietary_vendor_xiaomi",
+    "target_path": "vendor/xiaomi",
+    "branch": "cm-14.1"
   },
   {
-    "repository": "android_device_qcom_common",
-    "target_path": "device/qcom/common"
+    "repository": "LineageOS/android_external_stlport",
+    "target_path": "external/stlport",
+    "branch": "cm-14.1"
+  },
+  {
+    "repository": "LineageOS/android_device_qcom_common",
+    "target_path": "device/qcom/common",
+    "branch": "cm-14.1"
   }
+  {
+    "repository": "TheMuppets/proprietary_vendor_qcom_binaries",
+    "target_path": "vendor/qcom/binaries",
+    "branch": "cm-14.1"
+  },
 ]
