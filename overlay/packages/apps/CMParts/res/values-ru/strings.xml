@@ -540,6 +540,7 @@
     <string name="auto_power_save_summary_off">Не включать режим энергосбережения автоматически</string>
     <string name="app_perf_profiles_title">Автоматическая оптимизация</string>
     <string name="app_perf_profiles_summary">Автоматический выбор соответствующего профиля производительности для приложений и режимов использования</string>
+    <string name="auto_power_save_never">Никогда</string>
 
     <!-- Applications: Expanded desktop -->
     <string name="expanded_desktop_settings_title">Расширенный экран</string>
