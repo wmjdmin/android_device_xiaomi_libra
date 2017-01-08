@@ -536,7 +536,7 @@
     <string name="power_save_title">Максимальная экономия энергии</string>
     <string name="power_save_summary">Ограничение производительности устройства и фоновой активности для экономии энергии</string>
     <string name="auto_power_save_title">Автоматическое энергосбережение</string>
-    <string name="auto_power_save_summary_on">Автоматически включать режим энергосбережения при проценте батареи %d </string>
+    <string name="auto_power_save_summary_on">Автоматически включать режим энергосбережения при проценте батареи %s</string>
     <string name="auto_power_save_summary_off">Не включать режим энергосбережения автоматически</string>
     <string name="app_perf_profiles_title">Автоматическая оптимизация</string>
     <string name="app_perf_profiles_summary">Автоматический выбор соответствующего профиля производительности для приложений и режимов использования</string>
