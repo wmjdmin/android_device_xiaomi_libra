@@ -246,13 +246,6 @@ PRODUCT_PACKAGES += \
 
 # Camera
 PRODUCT_PACKAGES += \
-    camera.msm8992 \
-    libcamera \
-    libmmcamera_interface \
-    libmmcamera_interface2 \
-    libmmjpeg_interface \
-    libqomx_core \
-    mm-qcamera-app \
     Snap
 
 # Snap Config
@@ -271,10 +264,6 @@ PRODUCT_COPY_FILES += \
 # Build stlport for legacy blobs
 PRODUCT_PACKAGES += \
     libstlport
-
-# Legacy blob symbols
-PRODUCT_PACKAGES += \
-    libshim_camera
 
 PRODUCT_PACKAGES += \
     libboringssl-compat

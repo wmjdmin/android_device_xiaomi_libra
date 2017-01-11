@@ -127,7 +127,6 @@ dalvik.vm.dex2oat-threads=2
 dalvik.vm.image-dex2oat-threads=4
 
 # Camera
-persist.camera.tnr.preview=0
-persist.camera.tnr.video=0
-media.stagefright.legacyencoder=true
-media.stagefright.less-secure=true
+persist.camera.hal.debug.mask=268435456
+persist.camera.HAL3.enabled=0
+persist.camera.gyro.android=1
