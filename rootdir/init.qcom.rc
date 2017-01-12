@@ -94,6 +94,8 @@ on early-boot
     # Update dm-verity state and set partition.*.verified properties
     verity_update_state
 
+    start select_sns_hal
+
 on boot
     symlink /dev/block/platform/soc.0/f9824900.sdhci /dev/block/bootdevice
 
@@ -532,6 +534,12 @@ service imsdatadaemon /system/bin/imsdatadaemon
     group system wifi radio inet net_raw log diag net_admin
     writepid /dev/cpuset/system-background/tasks
     disabled
+
+service select_sns_hal /system/vendor/bin/sensor_select.sh
+    class main
+    user root
+    group root
+    oneshot
 
 on property:sys.ims.QMI_DAEMON_STATUS=1
     start imsdatadaemon
