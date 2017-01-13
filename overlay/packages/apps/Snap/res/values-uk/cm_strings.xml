@@ -135,6 +135,11 @@
   <string name="pref_camera_picturesize_entry_wqvga">WQVGA</string>
   <!-- Settings screen, dialog choice for QVGA picture size [CHAR LIMIT=15] -->
   <string name="pref_camera_picturesize_entry_qvga">QVGA</string>
+  <!-- format for entries in the picture size menu. Parameter one is aspect ratio
+       parameter two is size in megapixels, e.g. "(4:3) 12.1 megapixels"
+       NOTE: for Chinese (zh) and Korean (ko) the pixel number (parameter two)
+       will be multiplied by 100 as those languages want to count by ten thousands -->
+  <string name="pref_camera_megapixel_format">(%1$s) %2$1.1f мегапікселів</string>
   <!-- Settings screen, scene mode -->
   <string name="pref_camera_scenemode_entry_refocus">Макро+</string>
   <string name="pref_camera_scenemode_entry_antimotionblur">Зменшення розмиття руху</string>
