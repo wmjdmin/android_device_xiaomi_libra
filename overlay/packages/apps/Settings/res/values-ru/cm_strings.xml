@@ -15,5 +15,12 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-<!-- PLACEHOLDER -->
+
+    <!-- Volume link notification -->
+    <string name="volume_link_notification_title">Связать громкость рингтона и уведомлений</string>
+
+    <!-- Launch music player when headset is connected -->
+    <string name="headset_connect_player_title">Автозапуск плеера</string>
+    <string name="headset_connect_player_summary">Запускать плеер при подключении наушников</string>
+
 </resources>
