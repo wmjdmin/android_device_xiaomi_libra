@@ -18,3 +18,6 @@ PRODUCT_MANUFACTURER := Xiaomi
 
 PRODUCT_BUILD_PROP_OVERRIDES += \
     PRODUCT_NAME="libra"
+
+# Enable SU
+WITH_SU := true
