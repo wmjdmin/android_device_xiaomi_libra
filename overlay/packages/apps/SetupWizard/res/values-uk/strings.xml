@@ -18,6 +18,11 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
   <string name="location_battery_saving"><b>Знизити енергоспоживання</b>, обмежуючи кількість оновлень GPS на годину.</string>
   <string name="location_network_telephony"><b>Використовувати Wi-Fi і мобільні мережі</b> для визначення місця розташування.</string>
+  <string name="setup_mobile_data">Увімкнути передавання даних</string>
   <string name="enable_mobile_data_summary">Використовувати мобільний зв\'язок під час налаштування? Увімкнення передачі даних по стільникових мережах може спричинити витрати.</string>
   <string name="services_os_privacy_guard"><b>Увімкнути Сторожа приватності</b>, щоб зробити ваші особисті дані, такі як контакти, повідомлення або журнали викликів, недоступними для нововстановлених додатків</string>
+  <string name="settings_lockscreen_setup_title">Вибрати спосіб блокування екрана</string>
+  <string name="lockscreen_setup_title">Захистіть телефон</string>
+  <string name="lockscreen_setup_summary"><b>Захистити пристрій</b> і запитувати PIN-код, графічний ключ або пароль</string>
+  <string name="lockscreen_setup_screen_lock_setup">Додати PIN-код, графічний ключ або пароль</string>
 </resources>
