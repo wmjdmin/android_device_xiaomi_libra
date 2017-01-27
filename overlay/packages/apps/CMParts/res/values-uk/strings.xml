@@ -552,4 +552,12 @@
     <string name="expanded_desktop_style_hide_both">Приховувати обидві</string>
     <string name="expanded_desktop_nothing_to_show_text">Щоб налаштувати розширений робочий стіл для окремих програм, вимкніть перемикач</string>
 
+    <!-- Sounds: Charging sounds -->
+    <string name="charging_sounds_settings_title">Звук підключення живлення</string>
+    <string name="charging_sounds_enabled_title">Увімкнути</string>
+    <string name="charging_sounds_enabled_summary">Відтворювати звуковий сигнал, коли підключаеться або відключається джерело живлення</string>
+    <string name="power_notifications_vibrate_title">Вібрувати</string>
+    <string name="charging_sounds_ringtone_title">Звук сповіщення</string>
+    <string name="charging_sounds_ringtone_silent">Без звуку</string>
+
 </resources>

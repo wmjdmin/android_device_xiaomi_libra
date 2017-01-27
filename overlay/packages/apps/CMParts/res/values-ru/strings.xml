@@ -552,4 +552,12 @@
     <string name="expanded_desktop_style_hide_both">Скрывать обе</string>
     <string name="expanded_desktop_nothing_to_show_text">Чтобы настроить расширенный экран для отдельных программ, выключите переключатель</string>
 
+    <!-- Sounds: Charging sounds -->
+    <string name="charging_sounds_settings_title">Звук подключения питания</string>
+    <string name="charging_sounds_enabled_title">Включить</string>
+    <string name="charging_sounds_enabled_summary">Воспроизводить звуковой сигнал, когда подключается или отключается источник питания</string>
+    <string name="power_notifications_vibrate_title">Вибрировать</string>
+    <string name="charging_sounds_ringtone_title">Звук уведомления</string>
+    <string name="charging_sounds_ringtone_silent">Без звука</string>
+
 </resources>
