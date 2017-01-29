@@ -23,4 +23,16 @@
     <string name="headset_connect_player_title">Автозапуск плеера</string>
     <string name="headset_connect_player_summary">Запускать плеер при подключении наушников</string>
 
+    <!-- Per-app data restrictions -->
+    <string name="data_usage_app_restrict_data_category_title">Доступ к мобильному интернету</string>
+    <string name="data_usage_app_restrict_wifi_category_title">Доступ к Wi\u2011Fi</string>
+    <!-- Title for switch to block app data usage [CHAR LIMIT=30] -->
+    <string name="data_usage_app_restrict_all_data_title">Запретить доступ к мобильному интернету</string>
+    <!-- Summary for switch to block app data usage [CHAR LIMIT=NONE] -->
+    <string name="data_usage_app_restrict_all_data_summary">Предотвращать любую передачу данных через сотовые сети</string>
+    <!-- Title for switch to block app data usage [CHAR LIMIT=30] -->
+    <string name="data_usage_app_restrict_all_wifi_title">Запретить доступ к Wi\u2011Fi</string>
+    <!-- Summary for switch to block app data usage [CHAR LIMIT=NONE] -->
+    <string name="data_usage_app_restrict_all_wifi_summary">Предотвращать любую передачу данных через сети Wi\u2011Fi</string>
+
 </resources>

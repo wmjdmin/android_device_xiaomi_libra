@@ -99,4 +99,16 @@
     <string name="headset_connect_player_title">Запуск програвача</string>
     <string name="headset_connect_player_summary">"Запускати програвач при під'єднанні навушників"</string>
 
+    <!-- Per-app data restrictions -->
+    <string name="data_usage_app_restrict_data_category_title">Доступ до мобільного інтернету</string>
+    <string name="data_usage_app_restrict_wifi_category_title">Доступ до Wi\u2011Fi</string>
+    <!-- Title for switch to block app data usage [CHAR LIMIT=30] -->
+    <string name="data_usage_app_restrict_all_data_title">Заборонити доступ до мобільного інтернету</string>
+    <!-- Summary for switch to block app data usage [CHAR LIMIT=NONE] -->
+    <string name="data_usage_app_restrict_all_data_summary">Запобігати передачі будь-яких даних через стільникові мережі</string>
+    <!-- Title for switch to block app data usage [CHAR LIMIT=30] -->
+    <string name="data_usage_app_restrict_all_wifi_title">Заборонити доступ до Wi\u2011Fi</string>
+    <!-- Summary for switch to block app data usage [CHAR LIMIT=NONE] -->
+    <string name="data_usage_app_restrict_all_wifi_summary">Запобігати передачі будь-яких даних через мережі Wi\u2011Fi</string>
+
 </resources>
