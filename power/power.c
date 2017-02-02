@@ -125,7 +125,6 @@ static void power_hint(__attribute__((unused)) struct power_module *module, powe
         case POWER_HINT_INTERACTION:
         case POWER_HINT_CPU_BOOST:
         case POWER_HINT_LAUNCH_BOOST:
-        case POWER_HINT_AUDIO:
         case POWER_HINT_LOW_POWER:
         case POWER_HINT_VIDEO_ENCODE:
         case POWER_HINT_VIDEO_DECODE:
