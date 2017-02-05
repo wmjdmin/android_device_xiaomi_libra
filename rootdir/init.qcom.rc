@@ -109,6 +109,10 @@ on boot
     chown system system /dev/cpuset/camera-daemon/tasks
     chmod 0664 /dev/cpuset/camera-daemon/tasks
 
+    # execute script to set initial CPU settings
+    # don't run as a service to avoid race conditions
+    exec u:r:init-power-sh:s0 root root system -- /system/bin/init.qcom.power.sh
+
     # update foreground cpuset now that processors are up
     # foreground gets all CPUs except CPU 3
     # CPU 3 is reserved for the top app
@@ -641,12 +645,6 @@ service qcom-sh /system/bin/init.qcom.sh
     group system
     oneshot
 
-service qcom-post-boot /system/bin/sh /system/etc/init.qcom.post_boot.sh
-    class late_start
-    user root
-    disabled
-    oneshot
-
 # bugreport is triggered by holding down volume down, volume up and power
 service bugreport /system/bin/dumpstate -d -p -B \
         -o /data/data/com.android.shell/files/bugreports/bugreport
@@ -659,9 +657,6 @@ service readmac /system/bin/readmac
     user root
     group root
     oneshot
-
-on property:sys.boot_completed=1
-    start qcom-post-boot
 
 service energy-awareness /system/bin/energy-awareness
     class main

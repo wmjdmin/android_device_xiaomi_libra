@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 The CyanogenMod Project
+ * Copyright (c) 2016 The CyanogenMod Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,17 @@
  * limitations under the License.
  */
 
-#ifndef _QCOM_POWER_FEATURE_H
-#define _QCOM_POWER_FEATURE_H
+#define LOG_TAG "PowerHAL_MSM8992_Ext"
 
-#include <hardware/power.h>
+#include <utils/Log.h>
+#include "utils.h"
 
-#endif
+#define BIG_MIN_CPU_PATH "/sys/devices/system/cpu/cpu4/core_ctl/min_cpus"
+#define BIG_MAX_CPU_PATH "/sys/devices/system/cpu/cpu4/core_ctl/max_cpus"
+
+void cm_power_set_interactive_ext(int on)
+{
+    ALOGD("%sabling big CPU cluster", on ? "En" : "Dis");
+    sysfs_write(BIG_MAX_CPU_PATH, on ? "2" : "0");
+    sysfs_write(BIG_MIN_CPU_PATH, on ? "0" : "0");
+}
