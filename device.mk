@@ -309,7 +309,8 @@ PRODUCT_PACKAGES += \
     libbt-vendor
 
 DEVICE_PACKAGE_OVERLAYS := \
-    device/xiaomi/libra/overlay
+    device/xiaomi/libra/overlay \
+    vendor/hnt/overlay
 
 ADDITIONAL_DEFAULT_PROPERTIES += \
     ro.adb.secure=0 \
